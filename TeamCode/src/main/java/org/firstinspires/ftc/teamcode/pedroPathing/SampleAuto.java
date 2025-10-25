@@ -9,6 +9,8 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name = "Sample Auto", group = "Examples")
 public class SampleAuto extends OpMode {
@@ -16,7 +18,8 @@ public class SampleAuto extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private HuskyLens huskyLens;
-
+    private Servo fanRotate, cam;
+    private DcMotor outtake1, outtake2;
 
     private int pathState;
     private final Pose startPose = new Pose(88, 4, Math.toRadians(90)); // Start Pose of our robot.
@@ -140,6 +143,10 @@ public class SampleAuto extends OpMode {
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        fanRotate = hardwareMap.get(Servo.class, "fanRotate");
+        cam = hardwareMap.get(Servo.class, "cam");
+        outtake1 = hardwareMap.get(DcMotor.class, "outtake1");
+        outtake2 = hardwareMap.get(DcMotor.class, "outtake2");
         follower = Constants.createFollower(hardwareMap);
 
         buildPaths();
