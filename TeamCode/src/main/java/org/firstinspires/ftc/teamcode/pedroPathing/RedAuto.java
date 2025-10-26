@@ -6,14 +6,14 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Sample Auto", group = "Examples")
-public class SampleAuto extends OpMode {
+@Autonomous(name = "Red Auto", group = "Examples")
+public class RedAuto extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -22,7 +22,7 @@ public class SampleAuto extends OpMode {
     private DcMotor outtake1, outtake2;
 
     private int pathState;
-    private final Pose startPose = new Pose(88, 4, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose startPose = new Pose(88, 4, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose order1 = new Pose(108, 36, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     private final Pose order2 = new Pose(108, 60, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose order3 = new Pose(108, 84, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
@@ -55,8 +55,8 @@ public class SampleAuto extends OpMode {
 
         switch (pathState) {
             case(0):
-                follower.followPath(scorePreload);
-                setPathState(1);
+                follower.followPath(moveToOrder1);
+                setPathState(-1);
             case 1:
                 if(blocks.length > 0){
                     for(int i = 0; i < blocks.length; ++i) {
@@ -169,4 +169,8 @@ public class SampleAuto extends OpMode {
     /** We do not use this because everything should automatically disable **/
     @Override
     public void stop() {}
+
+    public Pose getFinalPose(){
+        return order1;
+    }
 }
