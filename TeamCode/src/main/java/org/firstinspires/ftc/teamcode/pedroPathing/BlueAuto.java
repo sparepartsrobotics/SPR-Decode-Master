@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns with class location
 
+import static java.lang.Thread.sleep;
+
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
@@ -10,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name = "Blue Auto", group = "Examples")
@@ -20,78 +24,103 @@ public class BlueAuto extends OpMode {
     private HuskyLens huskyLens;
     private Servo fanRotate, cam;
     private DcMotor outtake1, outtake2;
-
+    private double currPosFan = .05, camPos = 1, currRelease=-.01;
+    private double fanPos1 = .16, fanPos2 =  .27, fanPos3 =.38;
+    private double upPos1 = .1, upPos2 =  .21, upPos3 =.32;
+    private boolean x = true;
+    private boolean x2 = true;
+    private boolean launchStarted = false;
+     private int id = -1;
+    private int count = 1;
+    private int count2 = 1;
     private int pathState;
-    private final Pose startPose = new Pose(48, 4, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose order1 = new Pose(24, 36, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose order2 = new Pose(24, 60, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose order3 = new Pose(24, 84, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose moveToAprilTag = new Pose(72, 72, Math.toRadians(90)); //
-    private Path scorePreload;
-    private PathChain moveToOrder1, moveToOrder2, moveToOrder3;
+    private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
+    private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
+    private final Pose launchPose = new Pose(64, 90, Math.toRadians(325));
+    private final Pose launchOrder = new Pose(64,36, Math.toRadians(-45));
+    private final Pose order1 = new Pose(36, 36, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose order2 = new Pose(20, 56, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose order3 = new Pose(36, 56, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private Path detect;
+    private PathChain launch, moveToOrder1, moveToOrder2, moveToOrder3;
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     public void buildPaths(){
-        scorePreload = new Path(new BezierLine(startPose, moveToAprilTag));
-        scorePreload.setConstantHeadingInterpolation(startPose.getHeading());
+        detect = new Path(new BezierLine(startPose, detectPose));
+        detect.setConstantHeadingInterpolation(startPose.getHeading());
+        launch = follower.pathBuilder()
+                .addPath(new BezierLine(detectPose,launchPose))
+                .setLinearHeadingInterpolation(detectPose.getHeading(), launchPose.getHeading())
+                .build();
+//        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder1 = follower.pathBuilder()
-                .addPath(new BezierLine(moveToAprilTag, order1))
-                .setLinearHeadingInterpolation(moveToAprilTag.getHeading(), order1.getHeading())
+                .addPath(new BezierCurve(launchPose, order3))
+                .setLinearHeadingInterpolation(launchPose.getHeading(), order3.getHeading())
                 .build();
-        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        moveToOrder2 = follower.pathBuilder()
-                .addPath(new BezierLine(moveToAprilTag, order2))
-                .setLinearHeadingInterpolation(moveToAprilTag.getHeading(), order2.getHeading())
-                .build();
-        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        moveToOrder3 = follower.pathBuilder()
-                .addPath(new BezierLine(moveToAprilTag, order3))
-                .setLinearHeadingInterpolation(moveToAprilTag.getHeading(), order3.getHeading())
-                .build();
+//        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+//        moveToOrder3 = follower.pathBuilder()
+//                .addPath(new BezierLine(moveToAprilTag, order3))
+//                .setLinearHeadingInterpolation(moveToAprilTag.getHeading(), order3.getHeading())
+//                .build();
 
     }
-    public void autonomousPathUpdate() {
-        HuskyLens.Block[] blocks = huskyLens.blocks();
-        telemetry.addData("Block count", blocks.length);
+    public void autonomousPathUpdate() throws InterruptedException {
+
 
         switch (pathState) {
             case(0):
-                follower.followPath(moveToOrder1);
-                setPathState(-1);
+                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake1.setPower(.70);
+                outtake2.setPower(.70);
+                follower.followPath(detect);
+                setPathState(1);
+                break;
             case 1:
-                if(blocks.length > 0){
-                    for(int i = 0; i < blocks.length; ++i) {
-                        if (blocks[i].id == 1) {
+                if(!follower.isBusy()){
+                    HuskyLens.Block[] blocks = huskyLens.blocks();
+                    sleep(200);
+                    if(blocks.length > 0){
+                        telemetry.addData("Block count", blocks.length);
+                        telemetry.addData("ID: ", blocks[0].id);
+                        id = blocks[0].id;
+                        if (blocks[0].id == 1) {
                             setPathState(2);
+                            telemetry.update();
                         }
-                        else if(blocks[i].id == 2){
-                            setPathState(3);
+                        else if(blocks[0].id == 2){
+                            setPathState(2);
+                            telemetry.update();
                         }
-                        else if(blocks[i].id == 3){
-                            setPathState(4);
+                        else if(blocks[0].id == 3){
+                            setPathState(2);
+                            telemetry.update();
                         }
                         else{
                             setPathState(-1);
+                            telemetry.update();
                         }
                     }
                 }
-
                 break;
             case 2:
-
             /* You could check for
             - Follower State: "if(!follower.isBusy()) {}"
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
-                    /* Score Preload */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(moveToOrder1,true);
-                    setPathState(-1);
+                if(!follower.isBusy() && !launchStarted) {
+                    follower.followPath(launch,true);
+                    launchStarted = true;
                 }
+                if(!follower.isBusy() && launchStarted){
+                    launchArtifact();
+                    setPathState(3);
+                }
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                    /* Score Preload */
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+//                sleep(1000);
+//
+//                setPathState(-1);
                 break;
             case 3:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
@@ -99,19 +128,24 @@ public class BlueAuto extends OpMode {
                     /* Grab Sample */
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(moveToOrder2,true);
+                    follower.followPath(moveToOrder1,true);
                     setPathState(-1);
                 }
                 break;
             case 4:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
+                if(!follower.isBusy() && !launchStarted) {
                     /* Score Sample */
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(moveToOrder3,true);
+                    launchStarted = true;
+                }
+                if(!follower.isBusy() && launchStarted){
+                    launchArtifact();
                     setPathState(-1);
                 }
+
                 break;
 
         }
@@ -127,12 +161,18 @@ public class BlueAuto extends OpMode {
 
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
-        autonomousPathUpdate();
+        try {
+            autonomousPathUpdate();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // Feedback to Driver Hub for debugging
+
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("ID: ", id);
         telemetry.update();
     }
 
@@ -151,7 +191,7 @@ public class BlueAuto extends OpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
-
+        fanRotate.setPosition(upPos1);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -165,6 +205,28 @@ public class BlueAuto extends OpMode {
         opmodeTimer.resetTimer();
         setPathState(0);
     }
+    public void launchArtifact() throws InterruptedException {
+        camUp();
+        sleep(800);
+        fanRotate.setPosition(upPos2);
+        sleep(800);
+        camUp();
+        sleep(800);
+        fanRotate.setPosition(upPos3);
+        sleep(800);
+        camUp();
+        outtake1.setPower(0);
+        outtake2.setPower(0);
+    }
+    public void camUp() throws InterruptedException {
+        cam.setPosition(camPos);
+        if (camPos == 1) {
+            camPos = 0;
+        } else if (camPos == 0) {
+            camPos = 1;
+        }
+    }
+
 
     /** We do not use this because everything should automatically disable **/
     @Override
