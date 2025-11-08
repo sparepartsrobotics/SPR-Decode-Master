@@ -18,31 +18,33 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.function.Supplier;
+
 @Configurable
 @TeleOp
 public class sprTeleopRed extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
-    private Servo fanRotate, cam;
-    private DcMotorSimple outtake1, outtake2, intake;
+    private Servo fanRotate, cam, park1,park2;
+    private DcMotorSimple outtake1, outtake2, intake, outtake3, rightFront, leftFront, rightRear, leftRear;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive, isCam;
     private Supplier<PathChain> pathChain1, pathChain2;
     private TelemetryManager telemetryM;
 
     private boolean slowMode = false;
-    private double currPosFan = .05, camPos = 1, currRelease = -.01;
-    private double fanPos1 = .16, fanPos2 = .27, fanPos3 = .38;
-    private double upPos1 = .1, upPos2 = .21, upPos3 = .32;
+    private double currPosFan = .05, camPos = 1, currRelease=-.01;
+    private double fanPos1 = .16, fanPos2 =  .27, fanPos3 =.38, fanPos4 = .49;
+    private double upPos1 = .1, upPos2 =  .21, upPos3 =.32;
     private boolean x = true;
     private boolean x2 = true;
-    private int count = 1;
+    private int count = 1, count3 = 1;
     private int count2 = 1;
+
     private double fastModeMultiplier = .3;
 
     @Override
     public void init() {
-        RedAuto x = new RedAuto();
+        BlueAuto x = new BlueAuto();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
         follower.setStartingPose(x.getFinalPose());
@@ -51,11 +53,16 @@ public class sprTeleopRed extends OpMode {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
         fanRotate = hardwareMap.get(Servo.class, "fanRotate");
         cam = hardwareMap.get(Servo.class, "cam");
-        outtake1 = hardwareMap.get(DcMotor.class, "outtake1");
-        outtake2 = hardwareMap.get(DcMotor.class, "outtake2");
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        //62,70,225
-        //62,24,235
+        outtake1 = hardwareMap.get(DcMotorSimple.class, "outtake1");
+        outtake2 = hardwareMap.get(DcMotorSimple.class, "outtake2");
+        outtake3 = hardwareMap.get(DcMotorSimple.class, "outtake3");
+        leftFront = hardwareMap.get(DcMotorSimple.class, "leftFront");
+        leftRear = hardwareMap.get(DcMotorSimple.class, "leftRear");
+        rightRear = hardwareMap.get(DcMotorSimple.class, "rightRear");
+        rightFront = hardwareMap.get(DcMotorSimple.class, "rightFront");
+        park1 = hardwareMap.get(Servo.class, "park1");
+        park2 = hardwareMap.get(Servo.class, "park2");
+        intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(75, 70))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(225), 0.8))
@@ -66,7 +73,6 @@ public class sprTeleopRed extends OpMode {
                 .build();
 
     }
-
     @Override
     public void start() {
         //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
@@ -74,9 +80,11 @@ public class sprTeleopRed extends OpMode {
         //If you don't pass anything in, it uses the default (false)
         follower.startTeleopDrive();
         fanRotate.setPosition(currPosFan);
-        cam.setPosition(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
     }
-
     @Override
     public void loop() {
         //Call this once per loop
@@ -95,56 +103,70 @@ public class sprTeleopRed extends OpMode {
             if (gamepad1.rightStickButtonWasPressed()) {
                 fastModeMultiplier = 0.75;
             }
-            if (gamepad1.rightStickButtonWasReleased()) {
+            if(gamepad1.rightStickButtonWasReleased()){
                 fastModeMultiplier = .3;
             }
-            if (gamepad1.leftStickButtonWasPressed()) {
+            if(gamepad1.leftStickButtonWasPressed()){
                 outtake1.setPower(0);
                 outtake2.setPower(0);
+                outtake3.setPower(0);
             }
-            if (gamepad1.dpadUpWasPressed()) {
+            if(gamepad1.dpadUpWasPressed()){
                 cam.setPosition(camPos);
-                if (camPos == 1) {
+                if(camPos == 1){
                     camPos = 0;
-                } else if (camPos == 0) {
+                }
+                else if(camPos == 0){
                     camPos = 1;
                 }
             }
+            if(gamepad1.dpadDownWasPressed()){
+                park1.setPosition(.75);
+                park2.setPosition(.75);
+            }
 
-
-            if (gamepad1.rightBumperWasPressed()) {
-                if (count == 1) {
+            if(gamepad1.rightBumperWasPressed()){
+                if(count == 3 && count2 == 1){
+                    fanRotate.setPosition(currPosFan);
+                    count = 1;
+                }
+                else if(count == 1){
                     fanRotate.setPosition(fanPos1);
                     count++;
-                    x = false;
-                } else if (count == 2 && x) {
-                    fanRotate.setPosition(fanPos2);
-                    count--;
-                } else if (count == 2 && !x) {
+                }
+                else if(count == 2){
                     fanRotate.setPosition(fanPos2);
                     count++;
-                } else if (count == 3) {
+                }
+                else if(count==3){
                     fanRotate.setPosition(fanPos3);
-                    count--;
-                    x = true;
+                    count++;
+                }
+                else if(count == 4){
+                    fanRotate.setPosition(fanPos4);
+                    count = 1;
                 }
             }
-            if (gamepad1.dpadRightWasPressed()) {
-                if (count2 == 1) {
-                    fanRotate.setPosition(upPos1);
-                    count2++;
-                    x2 = false;
-                } else if (count2 == 2 && x2) {
-                    fanRotate.setPosition(upPos2);
-                    count2--;
-                } else if (count2 == 2 && !x2) {
-                    fanRotate.setPosition(upPos2);
-                    count2++;
-                } else if (count2 == 3) {
+            if(gamepad1.leftBumperWasPressed()){
+                fanRotate.setPosition(fanRotate.getPosition() - .11);
+            }
+            if(gamepad1.dpadRightWasPressed()){
+                if(count2 ==1){
                     fanRotate.setPosition(upPos3);
-                    count2--;
-                    x2 = true;
+                    count2++;
                 }
+                else if(count2 == 2) {
+                    fanRotate.setPosition(upPos2);
+                    count2++;
+                }
+                else if(count2==3){
+                    fanRotate.setPosition(upPos1);
+                    count2 = 1;
+
+                }
+            }
+            if(gamepad1.dpadLeftWasPressed()){
+                fanRotate.setPosition(fanRotate.getPosition() - .11);
             }
 //            if(gamepad1.rightBumperWasPressed()){
 //                currPosFan+=.11;
@@ -158,69 +180,89 @@ public class sprTeleopRed extends OpMode {
 //                fanRotate.setPosition(currPosFan);
 //            }
 
-
-
+            if(gamepad1.aWasPressed()){
+                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake1.setPower(.70);
+                outtake2.setPower(.70);
+                outtake3.setPower(.70);
+            }
+            if(gamepad1.bWasPressed()){
+                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake1.setPower(.73);
+                outtake2.setPower(.73);
+                outtake3.setPower(.70);
+            }
         }
-        if (automatedDrive) {
-            if (gamepad1.dpadRightWasPressed()) {
-                if (count2 == 1) {
+        if(automatedDrive){
+            if(gamepad1.dpadRightWasPressed()){
+                if(count2 == 1){
                     fanRotate.setPosition(upPos1);
                     count2++;
                     x2 = false;
-                } else if (count2 == 2 && x2) {
+                }
+                else if(count2 == 2 && x2){
                     fanRotate.setPosition(upPos2);
                     count2--;
-                } else if (count2 == 2 && !x2) {
+                }
+                else if(count2 == 2 && !x2){
                     fanRotate.setPosition(upPos2);
                     count2++;
-                } else if (count2 == 3) {
+                }
+                else if(count2==3){
                     fanRotate.setPosition(upPos3);
                     count2--;
                     x2 = true;
                 }
             }
-            if (gamepad1.yWasPressed()) {
-                automatedDrive = false;
-                follower.breakFollowing();
-                follower.startTeleopDrive();
-            }
-            if(gamepad1.xWasPressed()){
+            if(gamepad1.yWasPressed()){
                 automatedDrive = false;
                 follower.breakFollowing();
                 follower.startTeleopDrive();
             }
             if (gamepad1.bWasPressed()) {
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setPower(.74);
                 outtake2.setPower(.74);
+                outtake3.setPower(.74);
             }
             if (gamepad1.aWasPressed()) {
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setPower(.70);
                 outtake2.setPower(.70);
+                outtake3.setPower(.7);
+            }
+            if(gamepad1.xWasPressed()){
+                automatedDrive = false;
+                follower.breakFollowing();
+                follower.startTeleopDrive();
             }
         }
-        if (gamepad1.left_trigger > 0) {
+        if(gamepad1.left_trigger > 0){
             intake.setDirection(DcMotorSimple.Direction.FORWARD);
             intake.setPower(1);
-        } else if (gamepad1.left_trigger <= 0) {
+        }
+        else if(gamepad1.left_trigger <= 0){
             intake.setPower(0);
         }
-        if (gamepad1.right_trigger > 0) {
+        if(gamepad1.right_trigger > 0){
             intake.setDirection(DcMotorSimple.Direction.REVERSE);
             intake.setPower(1);
         }
-        if (gamepad1.right_trigger <= 0) {
+        if(gamepad1.right_trigger <= 0){
             intake.setPower(0);
         }
 
 
-        if (gamepad1.yWasPressed()) {
+        if(gamepad1.yWasPressed()){
             automatedDrive = true;
             follower.followPath(pathChain1.get());
 
         }
-        if (gamepad1.xWasPressed()) {
+        if(gamepad1.xWasPressed()){
             automatedDrive = true;
             follower.followPath(pathChain2.get());
 
@@ -232,5 +274,10 @@ public class sprTeleopRed extends OpMode {
 
         }
 
+
+
+        telemetryM.debug("position", follower.getPose());
+        telemetryM.debug("velocity", follower.getVelocity());
+        telemetryM.debug("automatedDrive", automatedDrive);
     }
 }
