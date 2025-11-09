@@ -9,15 +9,14 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Blue Auto", group = "Examples")
-public class BlueAuto extends OpMode {
+@Autonomous(name = "Red Auto Near", group = "Examples")
+public class RedAuto2 extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -25,25 +24,29 @@ public class BlueAuto extends OpMode {
     private Servo fanRotate, cam;
     private DcMotorSimple outtake1, outtake2, outtake3, intake;
     private double currPosFan = .05, camPos = 1, currRelease=-.01;
-    private double fanPos1 = .16, fanPos2 =  .27, fanPos3 =.38;
+    private double fanPos1 = .16, fanPos2 =  .27, fanPos3 =.38, fanPos4 = .49;
     private double upPos1 = .1, upPos2 =  .21, upPos3 =.32;
     private boolean x = true;
     private boolean x2 = true;
     private boolean launchStarted = false;
-     private int id = -1;
+    private int id = -1;
     private int count = 1;
     private int count2 = 1;
     private int pathState;
-    private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(67, 81, Math.toRadians(319));
-    private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
-    private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
-    private final Pose order31 = new Pose(37, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order32 = new Pose(33, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose startPose = new Pose(107, 131, Math.toRadians(-90)); // Start Pose of our robot.
+    private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
+    private final Pose launchPose = new Pose(77, 81, Math.toRadians(223));
+    private final Pose launchOrder = new Pose(80,36, Math.toRadians(0));
+    private final Pose order3 = new Pose(92, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order3s = new Pose(103,54.5,Math.toRadians(0));
+    private final Pose order31 = new Pose(107, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order32 = new Pose(111, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2 = new Pose(89, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2s = new Pose(103,78.5,Math.toRadians(0));
+    private final Pose order21 = new Pose(107, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order22 = new Pose(111, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private Path detect;
-    private PathChain launch, moveToOrder3,moveToOrder31,moveToOrder32,moveToOrder3s;
+    private PathChain launch, launch3,launch2, moveToOrder3,moveToOrder31,moveToOrder32,moveToOrder3s, moveToOrder2,moveToOrder21,moveToOrder22,moveToOrder2s;
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     public void buildPaths(){
         detect = new Path(new BezierLine(startPose, detectPose));
@@ -64,13 +67,37 @@ public class BlueAuto extends OpMode {
 //        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder31 = follower.pathBuilder()
                 .addPath(new BezierCurve(order3s, order31))
-                .setLinearHeadingInterpolation(order3.getHeading(), order31.getHeading())
+                .setLinearHeadingInterpolation(order3s.getHeading(), order31.getHeading())
                 .build();
         moveToOrder32 = follower.pathBuilder()
                 .addPath(new BezierCurve(order31, order32))
                 .setLinearHeadingInterpolation(order31.getHeading(), order32.getHeading())
                 .build();
-
+        moveToOrder2 = follower.pathBuilder()
+                .addPath(new BezierCurve(launchPose, order2))
+                .setLinearHeadingInterpolation(launchPose.getHeading(), order2s.getHeading())
+                .build();
+        moveToOrder2s = follower.pathBuilder()
+                .addPath(new BezierLine(order2, order2s))
+                .setLinearHeadingInterpolation(order2.getHeading(), order2s.getHeading())
+                .build();
+//        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+        moveToOrder21 = follower.pathBuilder()
+                .addPath(new BezierCurve(order2s, order21))
+                .setLinearHeadingInterpolation(order2s.getHeading(), order21.getHeading())
+                .build();
+        moveToOrder22 = follower.pathBuilder()
+                .addPath(new BezierCurve(order21, order22))
+                .setLinearHeadingInterpolation(order21.getHeading(), order22.getHeading())
+                .build();
+        launch2 = follower.pathBuilder()
+                .addPath(new BezierLine(order32,launchPose))
+                .setLinearHeadingInterpolation(order32.getHeading(), launchPose.getHeading())
+                .build();
+        launch3 = follower.pathBuilder()
+                .addPath(new BezierLine(order22,launchPose))
+                .setLinearHeadingInterpolation(order22.getHeading(), launchPose.getHeading())
+                .build();
     }
     public void autonomousPathUpdate() throws InterruptedException {
 
@@ -79,9 +106,9 @@ public class BlueAuto extends OpMode {
             case(0):
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.68);
-                outtake2.setPower(.68);
-                outtake3.setPower(.68);
+                outtake1.setPower(.63);
+                outtake2.setPower(.63);
+                outtake3.setPower(.63);
                 follower.followPath(detect);
                 setPathState(1);
                 break;
@@ -118,58 +145,160 @@ public class BlueAuto extends OpMode {
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-                if(!follower.isBusy() && !launchStarted) {
-                    follower.followPath(launch,true);
-                    launchStarted = true;
+                if(x){ // trigger path once
+                    follower.followPath(launch);
+                    x = false;
                 }
-                if(!follower.isBusy() && launchStarted){
+                if(!follower.isBusy()){
                     launchArtifact();
                     runIntake();
                     setPathState(3);
+                    x = true; // reset for next state
                 }
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                    /* Score Preload */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                break;
+            /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+            /* Score Preload */
+            /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
 //                sleep(1000);
 //
 //                setPathState(-1);
-                break;
+
             case 3:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(!follower.isBusy()) {
-                    follower.followPath(moveToOrder3);
-                    fan1();
-                    setPathState(4);
+                if(x){ // trigger path once
+                    follower.followPath(moveToOrder3); // start moving
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    fan1();           // trigger fan after movement is done
+                    setPathState(4);  // advance state
+                    x = true;         // reset for next state
                 }
                 break;
+
             case 4:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
-                    /* Score Sample */
+                if(x){
                     follower.followPath(moveToOrder3s);
+                    x = false;
+                }
+                if(!follower.isBusy()){
                     fan2();
                     setPathState(5);
+                    x = true;
                 }
                 break;
-            case 5:{
-                if(!follower.isBusy()){
+
+            case 5:
+                if(x){
                     follower.followPath(moveToOrder31);
-                    if(pathTimer.getElapsedTimeSeconds() > 0.3){ // wait a bit
-                        fan3();
-                        setPathState(6);
-                    }
-                    setPathState(6);
+                    x = false;
                 }
-                break;
-            }
-            case 6:{
                 if(!follower.isBusy()){
-                    follower.followPath(moveToOrder32);
-                    stopIntake();
-                    setPathState(-1);
+                    fan3();
+                    setPathState(6);
+                    x = true;
                 }
                 break;
-            }
+
+            case 6:
+                if(x){
+                    follower.followPath(moveToOrder32);
+
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    stopIntake();
+                    setPathState(7); // end auto
+                    x = true;
+                }
+                break;
+            case 7:
+                if(x){ // trigger path once
+                    outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                    outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                    outtake1.setPower(.63);
+                    outtake2.setPower(.63);
+                    outtake3.setPower(.63);
+                    follower.followPath(launch2);
+                    fanF();
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    sleep(1000);
+                    launchArtifact();
+
+                    runIntake();
+                    setPathState(8);
+                    x = true; // reset for next state
+                }
+                break;
+
+            case 8:
+                if(x){
+                    follower.followPath(moveToOrder2);
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    fan1();
+                    setPathState(9);
+                    x = true;
+                }
+                break;
+
+            case 9:
+                if(x){
+                    follower.followPath(moveToOrder2s);
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    fan2();
+                    setPathState(10);
+                    x = true;
+                }
+                break;
+
+            case 10:
+                if(x){
+                    follower.followPath(moveToOrder21);
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    fan3();
+                    setPathState(11);
+                    x = true;
+                }
+                break;
+
+            case 11:
+                if(x){
+                    follower.followPath(moveToOrder22);
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    stopIntake();
+                    setPathState(12); // end auto
+                    x = true;
+                }
+                break;
+
+            case 12:
+                if(x){
+                    outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                    outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                    outtake1.setPower(.63);
+                    outtake2.setPower(.63);
+                    outtake3.setPower(.63);
+                    follower.followPath(launch3);
+                    fanF();
+                    x = false;
+                }
+                if(!follower.isBusy()){
+                    sleep(1000);
+                    launchArtifact();
+                    runIntake();
+                    setPathState(-1); // finish auto
+                    x = true;
+                }
+                break;
 
 
         }
@@ -261,7 +390,12 @@ public class BlueAuto extends OpMode {
     public void fan3(){
         fanRotate.setPosition(fanPos3);
     }
-
+    public void fan4(){
+        fanRotate.setPosition(fanPos4);
+    }
+    public void fanF(){
+        fanRotate.setPosition(.1);
+    }
     public void camUp() throws InterruptedException {
         if (camPos == 1) {
             camPos = 0;
@@ -283,6 +417,6 @@ public class BlueAuto extends OpMode {
     public void stop() {}
 
     public Pose getFinalPose(){
-        return order3;
+        return launchPose;
     }
 }

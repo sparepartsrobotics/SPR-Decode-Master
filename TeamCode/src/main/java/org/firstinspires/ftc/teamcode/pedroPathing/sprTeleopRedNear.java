@@ -13,7 +13,6 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,7 +20,7 @@ import java.util.function.Supplier;
 
 @Configurable
 @TeleOp
-public class sprTeleopRed extends OpMode {
+public class sprTeleopRedNear extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1,park2;
@@ -44,10 +43,12 @@ public class sprTeleopRed extends OpMode {
 
     @Override
     public void init() {
-        BlueAuto x = new BlueAuto();
+        RedAuto2 x = new RedAuto2();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
         follower.setStartingPose(x.getFinalPose());
+
+
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");

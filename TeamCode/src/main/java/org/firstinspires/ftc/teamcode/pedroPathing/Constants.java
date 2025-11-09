@@ -30,7 +30,7 @@ public class Constants {
             .useSecondaryHeadingPIDF(false)
 
 
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.005,0,.0001,.6,.003));
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.008,0,.0001,.6,.003));
 
             //.centripetalScaling(.0005);
 
@@ -58,9 +58,9 @@ public class Constants {
             //leftRear: 2
             //rightRear: 3
             .maxPower(1)
-            .xVelocity(75)
+            .xVelocity(85)
 
-            .yVelocity(57.225062573049954)
+            .yVelocity(67.225062573049954)
             .rightFrontMotorName("rightFront")
             .rightRearMotorName("rightRear")
             .leftRearMotorName("leftRear")
