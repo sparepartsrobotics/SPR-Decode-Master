@@ -35,16 +35,16 @@ public class RedAuto1 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(84, 6, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(77, 81, Math.toRadians(223));
+    private final Pose launchPose = new Pose(77, 81, Math.toRadians(221));
     private final Pose launchOrder = new Pose(80,36, Math.toRadians(0));
     private final Pose order3 = new Pose(92, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order3s = new Pose(103,54.5,Math.toRadians(0));
-    private final Pose order31 = new Pose(107, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order32 = new Pose(111, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order3s = new Pose(104,54.5,Math.toRadians(0));
+    private final Pose order31 = new Pose(118, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order32 = new Pose(112, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order2 = new Pose(89, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order2s = new Pose(103,78.5,Math.toRadians(0));
-    private final Pose order21 = new Pose(107, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order22 = new Pose(111, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2s = new Pose(104,78.5,Math.toRadians(0));
+    private final Pose order21 = new Pose(108, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order22 = new Pose(112, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private Path detect;
     private PathChain launch, launch3,launch2, moveToOrder3,moveToOrder31,moveToOrder32,moveToOrder3s, moveToOrder2,moveToOrder21,moveToOrder22,moveToOrder2s;
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
@@ -106,9 +106,9 @@ public class RedAuto1 extends OpMode {
             case(0):
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.63);
-                outtake2.setPower(.63);
-                outtake3.setPower(.63);
+                outtake1.setPower(.61);
+                outtake2.setPower(.61);
+                outtake3.setPower(.61);
                 follower.followPath(detect);
                 setPathState(1);
                 break;
@@ -215,9 +215,9 @@ public class RedAuto1 extends OpMode {
                 if(x){ // trigger path once
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.63);
-                    outtake2.setPower(.63);
-                    outtake3.setPower(.63);
+                    outtake1.setPower(.61);
+                    outtake2.setPower(.61);
+                    outtake3.setPower(.61);
                     follower.followPath(launch2);
                     fanF();
                     x = false;

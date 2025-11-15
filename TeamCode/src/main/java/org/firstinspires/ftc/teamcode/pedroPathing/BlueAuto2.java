@@ -106,9 +106,9 @@ public class BlueAuto2 extends OpMode {
             case(0):
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.63);
-                outtake2.setPower(.63);
-                outtake3.setPower(.63);
+                outtake1.setPower(.61);
+                outtake2.setPower(.61);
+                outtake3.setPower(.61);
                 follower.followPath(detect);
                 setPathState(1);
                 break;
@@ -215,9 +215,9 @@ public class BlueAuto2 extends OpMode {
                 if(x){ // trigger path once
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.64);
-                    outtake2.setPower(.64);
-                    outtake3.setPower(.64);
+                    outtake1.setPower(.61);
+                    outtake2.setPower(.61);
+                    outtake3.setPower(.61);
                     follower.followPath(launch2);
                     fanF();
                     x = false;
@@ -284,9 +284,9 @@ public class BlueAuto2 extends OpMode {
                 if(x){
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.64);
-                    outtake2.setPower(.64);
-                    outtake3.setPower(.64);
+                    outtake1.setPower(.61);
+                    outtake2.setPower(.61);
+                    outtake3.setPower(.61);
                     follower.followPath(launch3);
                     fanF();
                     x = false;

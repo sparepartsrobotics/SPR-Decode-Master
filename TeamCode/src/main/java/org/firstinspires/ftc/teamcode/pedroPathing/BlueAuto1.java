@@ -43,7 +43,7 @@ public class BlueAuto1 extends OpMode {
     private final Pose order32 = new Pose(30, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order2 = new Pose(55, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order2s = new Pose(40,78.5,Math.toRadians(180));
-    private final Pose order21 = new Pose(36, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order21 = new Pose(35, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order22 = new Pose(30, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private Path detect;
     private PathChain launch, launch3,launch2, moveToOrder3,moveToOrder31,moveToOrder32,moveToOrder3s, moveToOrder2,moveToOrder21,moveToOrder22,moveToOrder2s;
@@ -215,9 +215,9 @@ public class BlueAuto1 extends OpMode {
                 if(x){ // trigger path once
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.64);
-                    outtake2.setPower(.64);
-                    outtake3.setPower(.64);
+                    outtake1.setPower(.63);
+                    outtake2.setPower(.63);
+                    outtake3.setPower(.63);
                     follower.followPath(launch2);
                     fanF();
                     x = false;
@@ -284,9 +284,9 @@ public class BlueAuto1 extends OpMode {
                 if(x){
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.64);
-                    outtake2.setPower(.64);
-                    outtake3.setPower(.64);
+                    outtake1.setPower(.63);
+                    outtake2.setPower(.63);
+                    outtake3.setPower(.63);
                     follower.followPath(launch3);
                     fanF();
                     x = false;

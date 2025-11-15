@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public class sprTeleopRedFar extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
-    private Servo fanRotate, cam, park1,park2;
+    private Servo fanRotate, cam, park1, park2;
     private DcMotorSimple outtake1, outtake2, intake, outtake3, rightFront, leftFront, rightRear, leftRear;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive, isCam;
@@ -38,12 +38,12 @@ public class sprTeleopRedFar extends OpMode {
     private boolean x2 = true;
     private int count = 1, count3 = 1;
     private int count2 = 1;
-
+    private double motorPower1 = .63;
     private double fastModeMultiplier = .3;
 
     @Override
     public void init() {
-        RedAuto1 x = new RedAuto1();
+        RedAuto2 x = new RedAuto2();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
         follower.setStartingPose(x.getFinalPose());
@@ -65,12 +65,12 @@ public class sprTeleopRedFar extends OpMode {
         park2 = hardwareMap.get(Servo.class, "park2");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(75, 70))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(225), 0.8))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(77, 81))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(223), 0.8))
                 .build();
         pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(75, 20))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(239), 0.8))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(242), 0.8))
                 .build();
 
     }
@@ -81,10 +81,8 @@ public class sprTeleopRedFar extends OpMode {
         //If you don't pass anything in, it uses the default (false)
         follower.startTeleopDrive();
         fanRotate.setPosition(currPosFan);
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftRear.setPower(0);
-        rightRear.setPower(0);
+        park1.setPosition(0.1);
+        park2.setPosition(0.1);
     }
     @Override
     public void loop() {
@@ -121,10 +119,7 @@ public class sprTeleopRedFar extends OpMode {
                     camPos = 1;
                 }
             }
-            if(gamepad1.dpadDownWasPressed()){
-                park1.setPosition(.75);
-                park2.setPosition(.75);
-            }
+
 
             if(gamepad1.rightBumperWasPressed()){
                 if(count == 3 && count2 == 1){
@@ -166,6 +161,18 @@ public class sprTeleopRedFar extends OpMode {
 
                 }
             }
+            if(gamepad2.dpadDownWasPressed()){
+                park1.setPosition(.5);
+                park2.setPosition(.5);
+            }
+            if(gamepad2.aWasPressed()){
+                park1.setPosition(.25);
+                park2.setPosition(.25);
+            }
+            if(gamepad2.yWasPressed()){
+                fanRotate.setPosition(currPosFan);
+                count=1;
+            }
             if(gamepad1.dpadLeftWasPressed()){
                 fanRotate.setPosition(fanRotate.getPosition() - .11);
             }
@@ -182,60 +189,45 @@ public class sprTeleopRedFar extends OpMode {
 //            }
 
             if(gamepad1.aWasPressed()){
+                motorPower1=.6;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.70);
-                outtake2.setPower(.70);
-                outtake3.setPower(.70);
+                outtake1.setPower(motorPower1);
+                outtake2.setPower(motorPower1);
+                outtake3.setPower(motorPower1);
             }
             if(gamepad1.bWasPressed()){
+                motorPower1=.6;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.73);
-                outtake2.setPower(.73);
-                outtake3.setPower(.70);
+                outtake1.setPower(motorPower1+.05);
+                outtake2.setPower(motorPower1+.05);
+                outtake3.setPower(motorPower1+.05);
             }
         }
         if(automatedDrive){
-            if(gamepad1.dpadRightWasPressed()){
-                if(count2 == 1){
-                    fanRotate.setPosition(upPos1);
-                    count2++;
-                    x2 = false;
-                }
-                else if(count2 == 2 && x2){
-                    fanRotate.setPosition(upPos2);
-                    count2--;
-                }
-                else if(count2 == 2 && !x2){
-                    fanRotate.setPosition(upPos2);
-                    count2++;
-                }
-                else if(count2==3){
-                    fanRotate.setPosition(upPos3);
-                    count2--;
-                    x2 = true;
-                }
+            if(gamepad1.aWasPressed()){
+                motorPower1=.6;
+                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake1.setPower(motorPower1);
+                outtake2.setPower(motorPower1);
+                outtake3.setPower(motorPower1);
+            }
+            if(gamepad1.bWasPressed()){
+                motorPower1=.6;
+                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                outtake1.setPower(motorPower1+.05);
+                outtake2.setPower(motorPower1+.05);
+                outtake3.setPower(motorPower1+.05);
             }
             if(gamepad1.yWasPressed()){
                 automatedDrive = false;
                 follower.breakFollowing();
                 follower.startTeleopDrive();
             }
-            if (gamepad1.bWasPressed()) {
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.74);
-                outtake2.setPower(.74);
-                outtake3.setPower(.74);
-            }
-            if (gamepad1.aWasPressed()) {
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.70);
-                outtake2.setPower(.70);
-                outtake3.setPower(.7);
-            }
+
             if(gamepad1.xWasPressed()){
                 automatedDrive = false;
                 follower.breakFollowing();
@@ -257,6 +249,25 @@ public class sprTeleopRedFar extends OpMode {
             intake.setPower(0);
         }
 
+        if(gamepad1.dpadDownWasPressed()){
+            motorPower1+=.03;
+            outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake1.setPower(motorPower1);
+            outtake2.setPower(motorPower1);
+            outtake3.setPower(motorPower1);
+
+        }
+        if(gamepad2.leftBumperWasPressed()){
+            motorPower1-=.03;
+            outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake1.setPower(motorPower1);
+            outtake2.setPower(motorPower1);
+            outtake3.setPower(motorPower1);
+        }
+
+
 
         if(gamepad1.yWasPressed()){
             automatedDrive = true;
@@ -268,7 +279,6 @@ public class sprTeleopRedFar extends OpMode {
             follower.followPath(pathChain2.get());
 
         }
-
         if (automatedDrive && !follower.isBusy()) {
             automatedDrive = false;
             follower.startTeleopDrive();
@@ -280,5 +290,6 @@ public class sprTeleopRedFar extends OpMode {
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
+        telemetry.addData("Motor Power: ", motorPower1);
     }
 }
