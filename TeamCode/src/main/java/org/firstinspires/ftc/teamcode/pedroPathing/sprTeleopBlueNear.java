@@ -73,16 +73,6 @@ public class sprTeleopBlueNear extends OpMode {
 
     }
     @Override
-    public void start() {
-        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
-        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
-        //If you don't pass anything in, it uses the default (false)
-        follower.startTeleopDrive();
-        fanRotate.setPosition(currPosFan);
-        park1.setPosition(0.1);
-        park2.setPosition(0.1);
-    }
-    @Override
     public void loop() {
         //Call this once per loop
         follower.update();
@@ -160,8 +150,8 @@ public class sprTeleopBlueNear extends OpMode {
                 }
             }
             if(gamepad2.dpadDownWasPressed()){
-                park1.setPosition(.5);
-                park2.setPosition(.5);
+                park1.setPosition(.75);
+                park2.setPosition(.75);
             }
             if(gamepad2.aWasPressed()){
                 park1.setPosition(.25);

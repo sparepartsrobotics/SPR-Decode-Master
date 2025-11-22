@@ -35,11 +35,11 @@ public class RedAuto1 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(84, 6, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(77, 81, Math.toRadians(221));
+    private final Pose launchPose = new Pose(85, 18, Math.toRadians(246));
     private final Pose launchOrder = new Pose(80,36, Math.toRadians(0));
     private final Pose order3 = new Pose(92, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(104,54.5,Math.toRadians(0));
-    private final Pose order31 = new Pose(118, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order31 = new Pose(108, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order32 = new Pose(112, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order2 = new Pose(89, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order2s = new Pose(104,78.5,Math.toRadians(0));
@@ -52,8 +52,8 @@ public class RedAuto1 extends OpMode {
         detect = new Path(new BezierLine(startPose, detectPose));
         detect.setConstantHeadingInterpolation(startPose.getHeading());
         launch = follower.pathBuilder()
-                .addPath(new BezierLine(detectPose,launchPose))
-                .setLinearHeadingInterpolation(detectPose.getHeading(), launchPose.getHeading())
+                .addPath(new BezierLine(startPose,launchPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), launchPose.getHeading())
                 .build();
 //        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder3 = follower.pathBuilder()
@@ -106,11 +106,11 @@ public class RedAuto1 extends OpMode {
             case(0):
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.61);
-                outtake2.setPower(.61);
-                outtake3.setPower(.61);
-                follower.followPath(detect);
-                setPathState(1);
+                outtake1.setPower(.7);
+                outtake2.setPower(.7);
+                outtake3.setPower(.7);
+                follower.followPath(launch);
+                setPathState(2);
                 break;
             case 1:
                 if(!follower.isBusy()){
@@ -145,11 +145,9 @@ public class RedAuto1 extends OpMode {
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-                if(x){ // trigger path once
-                    follower.followPath(launch);
-                    x = false;
-                }
+
                 if(!follower.isBusy()){
+                    sleep(1000);
                     launchArtifact();
                     runIntake();
                     setPathState(3);
@@ -215,9 +213,9 @@ public class RedAuto1 extends OpMode {
                 if(x){ // trigger path once
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.61);
-                    outtake2.setPower(.61);
-                    outtake3.setPower(.61);
+                    outtake1.setPower(.7);
+                    outtake2.setPower(.7);
+                    outtake3.setPower(.7);
                     follower.followPath(launch2);
                     fanF();
                     x = false;
@@ -284,9 +282,9 @@ public class RedAuto1 extends OpMode {
                 if(x){
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.63);
-                    outtake2.setPower(.63);
-                    outtake3.setPower(.63);
+                    outtake1.setPower(.7);
+                    outtake2.setPower(.7);
+                    outtake3.setPower(.7);
                     follower.followPath(launch3);
                     fanF();
                     x = false;
