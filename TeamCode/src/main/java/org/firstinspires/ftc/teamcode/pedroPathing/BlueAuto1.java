@@ -12,6 +12,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -22,7 +23,7 @@ public class BlueAuto1 extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam;
-    private DcMotorSimple outtake1, outtake2, outtake3, intake;
+    private DcMotorEx outtake1, outtake2, outtake3, intake;
     private double currPosFan = .05, camPos = 1, currRelease=-.01;
     private double fanPos1 = .16, fanPos2 =  .27, fanPos3 =.38, fanPos4 = .49;
     private double upPos1 = .1, upPos2 =  .21, upPos3 =.32;
@@ -35,7 +36,7 @@ public class BlueAuto1 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(67, 81, Math.toRadians(319));
+    private final Pose launchPose = new Pose(59, 18, Math.toRadians(294));
     private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
     private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
@@ -52,8 +53,8 @@ public class BlueAuto1 extends OpMode {
         detect = new Path(new BezierLine(startPose, detectPose));
         detect.setConstantHeadingInterpolation(startPose.getHeading());
         launch = follower.pathBuilder()
-                .addPath(new BezierLine(detectPose,launchPose))
-                .setLinearHeadingInterpolation(detectPose.getHeading(), launchPose.getHeading())
+                .addPath(new BezierLine(startPose,launchPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), launchPose.getHeading())
                 .build();
 //        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder3 = follower.pathBuilder()
@@ -106,11 +107,11 @@ public class BlueAuto1 extends OpMode {
             case(0):
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.63);
-                outtake2.setPower(.63);
-                outtake3.setPower(.63);
-                follower.followPath(detect);
-                setPathState(1);
+                outtake1.setPower(.7);
+                outtake2.setPower(.7);
+                outtake3.setPower(.7);
+                follower.followPath(launch);
+                setPathState(2);
                 break;
             case 1:
                 if(!follower.isBusy()){
@@ -145,11 +146,8 @@ public class BlueAuto1 extends OpMode {
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-                if(x){ // trigger path once
-                    follower.followPath(launch);
-                    x = false;
-                }
                 if(!follower.isBusy()){
+                    sleep(1000);
                     launchArtifact();
                     runIntake();
                     setPathState(3);
@@ -215,9 +213,9 @@ public class BlueAuto1 extends OpMode {
                 if(x){ // trigger path once
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.63);
-                    outtake2.setPower(.63);
-                    outtake3.setPower(.63);
+                    outtake1.setPower(.7);
+                    outtake2.setPower(.7);
+                    outtake3.setPower(.7);
                     follower.followPath(launch2);
                     fanF();
                     x = false;
@@ -284,9 +282,9 @@ public class BlueAuto1 extends OpMode {
                 if(x){
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.63);
-                    outtake2.setPower(.63);
-                    outtake3.setPower(.63);
+                    outtake1.setPower(.7);
+                    outtake2.setPower(.7);
+                    outtake3.setPower(.7);
                     follower.followPath(launch3);
                     fanF();
                     x = false;
@@ -338,10 +336,10 @@ public class BlueAuto1 extends OpMode {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
         fanRotate = hardwareMap.get(Servo.class, "fanRotate");
         cam = hardwareMap.get(Servo.class, "cam");
-        outtake1 = hardwareMap.get(DcMotorSimple.class, "outtake1");
-        outtake2 = hardwareMap.get(DcMotorSimple.class, "outtake2");
-        outtake3 = hardwareMap.get(DcMotorSimple.class, "outtake3");
-        intake = hardwareMap.get(DcMotorSimple.class, "intake");
+        outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake3 = hardwareMap.get(DcMotorEx.class, "outtake3");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         follower = Constants.createFollower(hardwareMap);
 
         buildPaths();

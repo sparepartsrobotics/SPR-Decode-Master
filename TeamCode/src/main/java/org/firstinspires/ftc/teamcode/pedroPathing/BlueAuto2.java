@@ -35,8 +35,8 @@ public class BlueAuto2 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(35, 131, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(67, 81, Math.toRadians(319));
-    private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
+    private final Pose launchPose = new Pose(57, 100, Math.toRadians(328));
+    private final Pose launchOrder = new Pose(59,36, Math.toRadians(180));
     private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
     private final Pose order31 = new Pose(36, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
@@ -52,8 +52,8 @@ public class BlueAuto2 extends OpMode {
         detect = new Path(new BezierLine(startPose, detectPose));
         detect.setConstantHeadingInterpolation(startPose.getHeading());
         launch = follower.pathBuilder()
-                .addPath(new BezierLine(detectPose,launchPose))
-                .setLinearHeadingInterpolation(detectPose.getHeading(), launchPose.getHeading())
+                .addPath(new BezierLine(startPose,launchPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), launchPose.getHeading())
                 .build();
 //        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder3 = follower.pathBuilder()
@@ -100,17 +100,15 @@ public class BlueAuto2 extends OpMode {
                 .build();
     }
     public void autonomousPathUpdate() throws InterruptedException {
-
-
         switch (pathState) {
             case(0):
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(.61);
-                outtake2.setPower(.61);
-                outtake3.setPower(.61);
-                follower.followPath(detect);
-                setPathState(1);
+                outtake1.setPower(.63);
+                outtake2.setPower(.63);
+                outtake3.setPower(.63);
+                follower.followPath(launch);
+                setPathState(2);
                 break;
             case 1:
                 if(!follower.isBusy()){
@@ -145,11 +143,9 @@ public class BlueAuto2 extends OpMode {
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-                if(x){ // trigger path once
-                    follower.followPath(launch);
-                    x = false;
-                }
+
                 if(!follower.isBusy()){
+                    sleep(1000);
                     launchArtifact();
                     runIntake();
                     setPathState(3);
@@ -215,9 +211,9 @@ public class BlueAuto2 extends OpMode {
                 if(x){ // trigger path once
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.61);
-                    outtake2.setPower(.61);
-                    outtake3.setPower(.61);
+                    outtake1.setPower(.63);
+                    outtake2.setPower(.63);
+                    outtake3.setPower(.63);
                     follower.followPath(launch2);
                     fanF();
                     x = false;
@@ -284,9 +280,9 @@ public class BlueAuto2 extends OpMode {
                 if(x){
                     outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                     outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setPower(.61);
-                    outtake2.setPower(.61);
-                    outtake3.setPower(.61);
+                    outtake1.setPower(.62);
+                    outtake2.setPower(.62);
+                    outtake3.setPower(.62);
                     follower.followPath(launch3);
                     fanF();
                     x = false;

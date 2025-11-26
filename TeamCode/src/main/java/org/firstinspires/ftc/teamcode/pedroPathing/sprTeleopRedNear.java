@@ -162,8 +162,8 @@ public class sprTeleopRedNear extends OpMode {
                 }
             }
             if(gamepad2.dpadDownWasPressed()){
-                park1.setPosition(.5);
-                park2.setPosition(.5);
+                park1.setPosition(.75);
+                park2.setPosition(.75);
             }
             if(gamepad2.aWasPressed()){
                 park1.setPosition(.25);

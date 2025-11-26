@@ -85,7 +85,7 @@ public class sprTeleopRedFar extends OpMode {
         park2.setPosition(0.1);
     }
     @Override
-    public void loop() {
+    public void     loop() {
         //Call this once per loop
         follower.update();
         telemetryM.update();
@@ -162,8 +162,8 @@ public class sprTeleopRedFar extends OpMode {
                 }
             }
             if(gamepad2.dpadDownWasPressed()){
-                park1.setPosition(.5);
-                park2.setPosition(.5);
+                park1.setPosition(.75);
+                park2.setPosition(.75);
             }
             if(gamepad2.aWasPressed()){
                 park1.setPosition(.25);
