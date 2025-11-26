@@ -13,6 +13,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -24,17 +25,20 @@ public class sprTeleopBlueFar extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1, park2;
-    private DcMotorSimple outtake1, outtake2, intake, outtake3, rightFront, leftFront, rightRear, leftRear;
+    private DcMotorEx outtake1, outtake2, outtake3;
+    private DcMotorSimple intake, rightFront, leftFront, rightRear, leftRear;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive, isCam;
     private Supplier<PathChain> pathChain1, pathChain2;
     private TelemetryManager telemetryM;
 
     private boolean slowMode = false;
+
     private double currPosFan = .05, camPos = 1, currRelease=-.01;
-    private double fanPos1 = .16, fanPos2 =  .27, fanPos3 =.38, fanPos4 = .49;
-    private double upPos1 = .1, upPos2 =  .21, upPos3 =.32;
+    private double fanPos1 = .1, fanPos2 =  .145, fanPos3 = .195, fanPos4 = .24;
+    private double upPos1 = .075, upPos2 = .125, upPos3 =.17;
     private boolean x = true;
+
     private boolean x2 = true;
     private int count = 1, count3 = 1;
     private int count2 = 1;
@@ -54,9 +58,9 @@ public class sprTeleopBlueFar extends OpMode {
         cam = hardwareMap.get(Servo.class, "cam");
         park1 = hardwareMap.get(Servo.class, "park1");
         park2 = hardwareMap.get(Servo.class, "park2");
-        outtake1 = hardwareMap.get(DcMotorSimple.class, "outtake1");
-        outtake2 = hardwareMap.get(DcMotorSimple.class, "outtake2");
-        outtake3 = hardwareMap.get(DcMotorSimple.class, "outtake3");
+        outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake3 = hardwareMap.get(DcMotorEx.class, "outtake3");
         leftFront = hardwareMap.get(DcMotorSimple.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorSimple.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorSimple.class, "rightRear");
@@ -117,8 +121,6 @@ public class sprTeleopBlueFar extends OpMode {
                     camPos = 1;
                 }
             }
-
-
             if(gamepad1.rightBumperWasPressed()){
                 if(count == 3 && count2 == 1){
                     fanRotate.setPosition(currPosFan);
@@ -264,9 +266,6 @@ public class sprTeleopBlueFar extends OpMode {
             outtake2.setPower(motorPower1);
             outtake3.setPower(motorPower1);
         }
-
-
-
         if(gamepad1.yWasPressed()){
             automatedDrive = true;
             follower.followPath(pathChain1.get());
@@ -280,14 +279,12 @@ public class sprTeleopBlueFar extends OpMode {
         if (automatedDrive && !follower.isBusy()) {
             automatedDrive = false;
             follower.startTeleopDrive();
-
         }
-
-
 
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
         telemetry.addData("Motor Power: ", motorPower1);
+        telemetry.addData("Indexer Pos: ", fanRotate.getPosition());
     }
 }

@@ -32,8 +32,8 @@ public class sprTeleopBlueNear extends OpMode {
 
     private boolean slowMode = false;
     private double currPosFan = .05, camPos = 1, currRelease=-.01;
-    private double fanPos1 = .16, fanPos2 =  .27, fanPos3 =.38, fanPos4 = .49;
-    private double upPos1 = .1, upPos2 =  .21, upPos3 =.32;
+    private double fanPos1 = .1, fanPos2 =  .145, fanPos3 = .195, fanPos4 = .24;
+    private double upPos1 = .075, upPos2 = .125, upPos3 =.17;
     private boolean x = true;
     private boolean x2 = true;
     private int count = 1, count3 = 1;
