@@ -280,7 +280,6 @@ public class sprTeleopBlueFar extends OpMode {
             automatedDrive = false;
             follower.startTeleopDrive();
         }
-
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
