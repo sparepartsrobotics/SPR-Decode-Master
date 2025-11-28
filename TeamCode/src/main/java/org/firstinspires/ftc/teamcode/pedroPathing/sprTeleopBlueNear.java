@@ -13,6 +13,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -24,26 +25,29 @@ public class sprTeleopBlueNear extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1, park2;
-    private DcMotorSimple outtake1, outtake2, intake, outtake3, rightFront, leftFront, rightRear, leftRear;
+    private DcMotorEx outtake1, outtake2, outtake3;
+    private DcMotorSimple intake, rightFront, leftFront, rightRear, leftRear;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive, isCam;
     private Supplier<PathChain> pathChain1, pathChain2;
     private TelemetryManager telemetryM;
 
     private boolean slowMode = false;
+
     private double currPosFan = .05, camPos = 1, currRelease=-.01;
     private double fanPos1 = .1, fanPos2 =  .145, fanPos3 = .195, fanPos4 = .24;
     private double upPos1 = .075, upPos2 = .125, upPos3 =.17;
     private boolean x = true;
+
     private boolean x2 = true;
-    private int count = 1, count3 = 1;
+    private int count = 1, count3 = 1, targetVel = 1150;
     private int count2 = 1;
     private double motorPower1 = .63;
     private double fastModeMultiplier = .3;
 
     @Override
     public void init() {
-        BlueAuto2 x = new BlueAuto2();
+        BlueAuto1 x = new BlueAuto1();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
         follower.setStartingPose(x.getFinalPose());
@@ -54,23 +58,33 @@ public class sprTeleopBlueNear extends OpMode {
         cam = hardwareMap.get(Servo.class, "cam");
         park1 = hardwareMap.get(Servo.class, "park1");
         park2 = hardwareMap.get(Servo.class, "park2");
-        outtake1 = hardwareMap.get(DcMotorSimple.class, "outtake1");
-        outtake2 = hardwareMap.get(DcMotorSimple.class, "outtake2");
-        outtake3 = hardwareMap.get(DcMotorSimple.class, "outtake3");
+        outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake3 = hardwareMap.get(DcMotorEx.class, "outtake3");
         leftFront = hardwareMap.get(DcMotorSimple.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorSimple.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorSimple.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorSimple.class, "rightFront");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(67, 81))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(320), 0.8))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(57, 100))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(328), 0.8))
                 .build();
         pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(67, 22))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(297), 0.8))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 18))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(294), 0.8))
                 .build();
 
+    }
+    @Override
+    public void start() {
+        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
+        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
+        //If you don't pass anything in, it uses the default (false)
+        follower.startTeleopDrive();
+        fanRotate.setPosition(currPosFan);
+        park1.setPosition(0.1);
+        park2.setPosition(0.1);
     }
     @Override
     public void loop() {
@@ -107,8 +121,6 @@ public class sprTeleopBlueNear extends OpMode {
                     camPos = 1;
                 }
             }
-
-
             if(gamepad1.rightBumperWasPressed()){
                 if(count == 3 && count2 == 1){
                     fanRotate.setPosition(currPosFan);
@@ -177,38 +189,38 @@ public class sprTeleopBlueNear extends OpMode {
 //            }
 
             if(gamepad1.aWasPressed()){
-                motorPower1=.6;
+                targetVel=1150;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1);
-                outtake2.setPower(motorPower1);
-                outtake3.setPower(motorPower1);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                motorPower1=.6;
+                targetVel = 1330;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1+.05);
-                outtake2.setPower(motorPower1+.05);
-                outtake3.setPower(motorPower1+.05);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
         }
         if(automatedDrive){
             if(gamepad1.aWasPressed()){
-                motorPower1=.6;
+                targetVel = 1150;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1);
-                outtake2.setPower(motorPower1);
-                outtake3.setPower(motorPower1);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                motorPower1=.6;
+                targetVel = 1330;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1+.05);
-                outtake2.setPower(motorPower1+.05);
-                outtake3.setPower(motorPower1+.05);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.yWasPressed()){
                 automatedDrive = false;
@@ -238,25 +250,22 @@ public class sprTeleopBlueNear extends OpMode {
         }
 
         if(gamepad1.dpadDownWasPressed()){
-            motorPower1+=.03;
+            targetVel+=50;
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setPower(motorPower1);
-            outtake2.setPower(motorPower1);
-            outtake3.setPower(motorPower1);
+            outtake1.setPower(targetVel);
+            outtake2.setPower(targetVel);
+            outtake3.setPower(targetVel);
 
         }
         if(gamepad2.leftBumperWasPressed()){
-            motorPower1-=.03;
+            targetVel-=50;
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setPower(motorPower1);
-            outtake2.setPower(motorPower1);
-            outtake3.setPower(motorPower1);
+            outtake1.setPower(targetVel);
+            outtake2.setPower(targetVel);
+            outtake3.setPower(targetVel);
         }
-
-
-
         if(gamepad1.yWasPressed()){
             automatedDrive = true;
             follower.followPath(pathChain1.get());
@@ -270,14 +279,12 @@ public class sprTeleopBlueNear extends OpMode {
         if (automatedDrive && !follower.isBusy()) {
             automatedDrive = false;
             follower.startTeleopDrive();
-
         }
-
-
 
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
         telemetry.addData("Motor Power: ", motorPower1);
+        telemetry.addData("Indexer Pos: ", fanRotate.getPosition());
     }
 }

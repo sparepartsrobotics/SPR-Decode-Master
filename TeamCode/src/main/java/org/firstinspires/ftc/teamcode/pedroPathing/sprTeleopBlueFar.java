@@ -40,7 +40,7 @@ public class sprTeleopBlueFar extends OpMode {
     private boolean x = true;
 
     private boolean x2 = true;
-    private int count = 1, count3 = 1;
+    private int count = 1, count3 = 1, targetVel = 1150;
     private int count2 = 1;
     private double motorPower1 = .63;
     private double fastModeMultiplier = .3;
@@ -67,12 +67,12 @@ public class sprTeleopBlueFar extends OpMode {
         rightFront = hardwareMap.get(DcMotorSimple.class, "rightFront");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(67, 81))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(320), 0.8))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(57, 100))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(328), 0.8))
                 .build();
         pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(67, 22))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(295), 0.8))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 18))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(294), 0.8))
                 .build();
 
     }
@@ -189,38 +189,38 @@ public class sprTeleopBlueFar extends OpMode {
 //            }
 
             if(gamepad1.aWasPressed()){
-                motorPower1=.6;
+                targetVel=1150;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1);
-                outtake2.setPower(motorPower1);
-                outtake3.setPower(motorPower1);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                motorPower1=.6;
+                targetVel = 1330;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1+.05);
-                outtake2.setPower(motorPower1+.05);
-                outtake3.setPower(motorPower1+.05);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
         }
         if(automatedDrive){
             if(gamepad1.aWasPressed()){
-                motorPower1=.6;
+                targetVel = 1150;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1);
-                outtake2.setPower(motorPower1);
-                outtake3.setPower(motorPower1);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                motorPower1=.6;
+                targetVel = 1330;
                 outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setPower(motorPower1+.05);
-                outtake2.setPower(motorPower1+.05);
-                outtake3.setPower(motorPower1+.05);
+                outtake1.setVelocity(targetVel);
+                outtake2.setVelocity(targetVel);
+                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.yWasPressed()){
                 automatedDrive = false;
@@ -250,21 +250,21 @@ public class sprTeleopBlueFar extends OpMode {
         }
 
         if(gamepad1.dpadDownWasPressed()){
-            motorPower1+=.03;
+            targetVel+=50;
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setPower(motorPower1);
-            outtake2.setPower(motorPower1);
-            outtake3.setPower(motorPower1);
+            outtake1.setPower(targetVel);
+            outtake2.setPower(targetVel);
+            outtake3.setPower(targetVel);
 
         }
         if(gamepad2.leftBumperWasPressed()){
-            motorPower1-=.03;
+            targetVel-=50;
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setPower(motorPower1);
-            outtake2.setPower(motorPower1);
-            outtake3.setPower(motorPower1);
+            outtake1.setPower(targetVel);
+            outtake2.setPower(targetVel);
+            outtake3.setPower(targetVel);
         }
         if(gamepad1.yWasPressed()){
             automatedDrive = true;
