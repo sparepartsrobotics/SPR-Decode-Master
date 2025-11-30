@@ -25,7 +25,7 @@ public class sprTeleopRedFar extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1, park2;
-    private DcMotorEx outtake1, outtake2, outtake3;
+    private DcMotorEx outtake1, backspinRoller, outtake2;
     private DcMotorSimple intake, rightFront, leftFront, rightRear, leftRear;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive, isCam;
@@ -40,7 +40,7 @@ public class sprTeleopRedFar extends OpMode {
     private boolean x = true;
 
     private boolean x2 = true;
-    private int count = 1, count3 = 1, targetVel = 1150;
+    private int count = 1, count3 = 1, targetVel = 1150, rollerVel = 1250;
     private int count2 = 1;
     private double motorPower1 = .63;
     private double fastModeMultiplier = .3;
@@ -59,8 +59,8 @@ public class sprTeleopRedFar extends OpMode {
         fanRotate = hardwareMap.get(Servo.class, "fanRotate");
         cam = hardwareMap.get(Servo.class, "cam");
         outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
-        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake2");
-        outtake3 = hardwareMap.get(DcMotorEx.class, "outtake3");
+        backspinRoller = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake3");
         leftFront = hardwareMap.get(DcMotorSimple.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorSimple.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorSimple.class, "rightRear");
@@ -111,8 +111,8 @@ public class sprTeleopRedFar extends OpMode {
             }
             if(gamepad1.leftStickButtonWasPressed()){
                 outtake1.setPower(0);
+                backspinRoller.setPower(0);
                 outtake2.setPower(0);
-                outtake3.setPower(0);
             }
             if(gamepad1.dpadUpWasPressed()){
                 cam.setPosition(camPos);
@@ -192,37 +192,37 @@ public class sprTeleopRedFar extends OpMode {
 
             if(gamepad1.aWasPressed()){
                 targetVel=1150;
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                rollerVel = 1250;
+                backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
+                backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
-                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 1330;
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                targetVel = 1250;
+                rollerVel = 1350;
+                backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
+                backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
-                outtake3.setVelocity(targetVel);
             }
         }
         if(automatedDrive){
             if(gamepad1.aWasPressed()){
                 targetVel = 1150;
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                rollerVel = 1250;
+                backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
+                backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
-                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 1330;
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+                targetVel = 1250;
+                rollerVel = 1350;
+                backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
+                backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
-                outtake3.setVelocity(targetVel);
             }
             if(gamepad1.yWasPressed()){
                 automatedDrive = false;
@@ -254,19 +254,17 @@ public class sprTeleopRedFar extends OpMode {
         if(gamepad1.dpadDownWasPressed()){
             targetVel+=50;
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake1.setPower(targetVel);
             outtake2.setPower(targetVel);
-            outtake3.setPower(targetVel);
 
         }
         if(gamepad2.leftBumperWasPressed()){
             targetVel-=50;
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake1.setPower(targetVel);
             outtake2.setPower(targetVel);
-            outtake3.setPower(targetVel);
         }
         if(gamepad1.yWasPressed()){
             automatedDrive = true;
@@ -283,10 +281,24 @@ public class sprTeleopRedFar extends OpMode {
             follower.startTeleopDrive();
         }
 
+        if (gamepad2.rightStickButtonWasPressed()) {
+            rollerVel+=50;
+            backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+            backspinRoller.setVelocity(rollerVel);
+        }
+        if (gamepad2.leftStickButtonWasPressed()) {
+            rollerVel-=50;
+            backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+            backspinRoller.setVelocity(rollerVel);
+        }
+
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
         telemetry.addData("Motor Power: ", motorPower1);
         telemetry.addData("Indexer Pos: ", fanRotate.getPosition());
+        telemetry.addData("Outtake1", outtake1.getVelocity());
+        telemetry.addData("Outtake2", outtake2.getVelocity());
+        telemetry.addData("rollerVel", backspinRoller.getVelocity());
     }
 }
