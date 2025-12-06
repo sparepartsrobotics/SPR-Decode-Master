@@ -207,16 +207,16 @@ public class sprTeleopBlueFar extends OpMode {
         }
         if(automatedDrive){
             if(gamepad1.aWasPressed()){
-                targetVel = 1150;
-                rollerVel = 1250;
+                targetVel = 810;
+                rollerVel = 2000;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 1250;
-                rollerVel = 1350;
+                targetVel = 1120;
+                rollerVel = 1950;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
