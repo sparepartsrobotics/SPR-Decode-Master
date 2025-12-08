@@ -58,9 +58,9 @@ public class sprTeleopBlueFar extends OpMode {
         cam = hardwareMap.get(Servo.class, "cam");
         park1 = hardwareMap.get(Servo.class, "park1");
         park2 = hardwareMap.get(Servo.class, "park2");
-        outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1"); //exp hub port 0
-        backspinRoller = hardwareMap.get(DcMotorEx.class, "outtake2"); //exp hub port 1
-        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake3"); //exp hub port 3
+        outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
+        backspinRoller = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake3");
         leftFront = hardwareMap.get(DcMotorSimple.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorSimple.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorSimple.class, "rightRear");
@@ -74,13 +74,10 @@ public class sprTeleopBlueFar extends OpMode {
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 18))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(294), 0.8))
                 .build();
-        outtake1.setVelocityPIDFCoefficients(10.15,7.7,0,2);
-        outtake2.setVelocityPIDFCoefficients(10.15,7.7,0,2);
-        backspinRoller.setVelocityPIDFCoefficients(10.15,7.7,0,2);
-
+        outtake1.setVelocityPIDFCoefficients(20,0,0,20);
+        outtake2.setVelocityPIDFCoefficients(20,0,0,20);
 
     }
-
     @Override
     public void start() {
         //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
@@ -194,16 +191,16 @@ public class sprTeleopBlueFar extends OpMode {
 //            }
 
             if(gamepad1.aWasPressed()){
-                targetVel = 790;
-                rollerVel = 2000;
+                targetVel=790;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 990;
-                rollerVel = 1950;
+                targetVel = 870;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
@@ -213,15 +210,15 @@ public class sprTeleopBlueFar extends OpMode {
         if(automatedDrive){
             if(gamepad1.aWasPressed()){
                 targetVel = 790;
-                rollerVel = 2000;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
-                backspinRoller.setVelocity(rollerVel);
+                backspinRoller.setVelocity(targetVel);
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 990;
-                rollerVel = 1950;
+                targetVel = 870;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
@@ -256,16 +253,18 @@ public class sprTeleopBlueFar extends OpMode {
 
         if(gamepad1.dpadDownWasPressed()){
             targetVel+=10;
-            backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setVelocity(targetVel);
-            outtake2.setVelocity(targetVel);
+            outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake1.setPower(targetVel);
+            outtake2.setPower(targetVel);
 
         }
         if(gamepad2.leftBumperWasPressed()){
             targetVel-=10;
-            backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setVelocity(targetVel);
-            outtake2.setVelocity(targetVel);
+            outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
+            outtake1.setPower(targetVel);
+            outtake2.setPower(targetVel);
         }
         if(gamepad1.yWasPressed()){
             automatedDrive = true;
@@ -281,6 +280,7 @@ public class sprTeleopBlueFar extends OpMode {
             automatedDrive = false;
             follower.startTeleopDrive();
         }
+
         if (gamepad2.rightStickButtonWasPressed()) {
             rollerVel+=10;
             backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);

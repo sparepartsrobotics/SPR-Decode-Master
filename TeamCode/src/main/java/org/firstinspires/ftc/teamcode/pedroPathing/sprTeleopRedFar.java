@@ -76,9 +76,9 @@ public class sprTeleopRedFar extends OpMode {
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(88, 96))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(219), 0.8))
                 .build();
-        outtake1.setVelocityPIDFCoefficients(10.15,7.7,0,2);
-        outtake2.setVelocityPIDFCoefficients(10.15,7.7,0,2);
-        backspinRoller.setVelocityPIDFCoefficients(10.15,7.7,0,2);
+        outtake1.setVelocityPIDFCoefficients(20,0,0,20);
+        outtake2.setVelocityPIDFCoefficients(20,0,0,20);
+
 
     }
     @Override
@@ -195,15 +195,15 @@ public class sprTeleopRedFar extends OpMode {
 
             if(gamepad1.aWasPressed()){
                 targetVel=790;
-                rollerVel = 2000;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 990;
-                rollerVel = 1950;
+                targetVel = 870;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
@@ -213,15 +213,15 @@ public class sprTeleopRedFar extends OpMode {
         if(automatedDrive){
             if(gamepad1.aWasPressed()){
                 targetVel = 790;
-                rollerVel = 2000;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 990;
-                rollerVel = 1950;
+                targetVel = 870;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);

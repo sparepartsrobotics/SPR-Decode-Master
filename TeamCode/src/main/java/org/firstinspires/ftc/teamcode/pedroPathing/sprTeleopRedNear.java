@@ -76,8 +76,10 @@ public class sprTeleopRedNear extends OpMode {
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(88, 96))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(219), 0.8))
                 .build();
-        outtake1.setVelocityPIDFCoefficients(10.15,7.7,0,2);
-        outtake2.setVelocityPIDFCoefficients(10.15,7.7,0,2);
+        outtake1.setVelocityPIDFCoefficients(20,0,0,20);
+        outtake2.setVelocityPIDFCoefficients(20,0,0,20);
+
+
     }
     @Override
     public void start() {
@@ -192,16 +194,16 @@ public class sprTeleopRedNear extends OpMode {
 //            }
 
             if(gamepad1.aWasPressed()){
-                targetVel = 790;
-                rollerVel = 2000;
+                targetVel=790;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 990;
-                rollerVel = 1950;
+                targetVel = 870;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
@@ -211,15 +213,15 @@ public class sprTeleopRedNear extends OpMode {
         if(automatedDrive){
             if(gamepad1.aWasPressed()){
                 targetVel = 790;
-                rollerVel = 2000;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 990;
-                rollerVel = 1950;
+                targetVel = 870;
+                rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
@@ -257,7 +259,6 @@ public class sprTeleopRedNear extends OpMode {
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake1.setPower(targetVel);
-            backspinRoller.setPower(targetVel);
             outtake2.setPower(targetVel);
 
         }
@@ -266,7 +267,6 @@ public class sprTeleopRedNear extends OpMode {
             outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
             outtake1.setPower(targetVel);
-            backspinRoller.setPower(targetVel);
             outtake2.setPower(targetVel);
         }
         if(gamepad1.yWasPressed()){
@@ -303,6 +303,5 @@ public class sprTeleopRedNear extends OpMode {
         telemetry.addData("Outtake1", outtake1.getVelocity());
         telemetry.addData("Outtake2", outtake2.getVelocity());
         telemetry.addData("rollerVel", backspinRoller.getVelocity());
-
     }
 }

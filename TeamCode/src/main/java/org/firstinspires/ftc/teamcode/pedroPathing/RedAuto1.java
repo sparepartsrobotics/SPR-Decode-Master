@@ -23,7 +23,7 @@ public class RedAuto1 extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam;
-    private DcMotorEx outtake1, outtake2, outtake3, intake;
+    private DcMotorEx outtake1, outtake2, outtake3, intake, backSpinRoller;
     private double currPosFan = .05, camPos = 1, currRelease=-.01;
     private double fanPos1 = .1, fanPos2 =  .145, fanPos3 = .195, fanPos4 = .24;
     private double upPos1 = .075, upPos2 = .125, upPos3 =.17;
@@ -31,7 +31,7 @@ public class RedAuto1 extends OpMode {
     private boolean x2 = true;
     private boolean launchStarted = false;
     private int id = -1;
-    private int count = 1,targetVel = 1350;
+    private int count = 1,targetVel = 1350, rollerVel = 1860;
     private int count2 = 1;
     private int pathState;
     private final Pose startPose = new Pose(84, 6, Math.toRadians(-90)); // Start Pose of our robot.
@@ -126,11 +126,6 @@ public class RedAuto1 extends OpMode {
     public void autonomousPathUpdate() throws InterruptedException {
         switch (pathState) {
             case(0):
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setVelocity(targetVel);
-                outtake2.setVelocity(targetVel);
-                outtake3.setVelocity(targetVel);
                 follower.followPath(launch);
                 setPathState(2);
                 break;
@@ -168,6 +163,7 @@ public class RedAuto1 extends OpMode {
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
                 if(!follower.isBusy()){
+                    stopIntake();
                     sleep(1500);
                     launchArtifact();
                     runIntake();
@@ -232,11 +228,6 @@ public class RedAuto1 extends OpMode {
                 break;
             case 7:
                 if(x){ // trigger path once
-                    outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setVelocity(targetVel + 25);
-                    outtake2.setVelocity(targetVel + 25);
-                    outtake3.setVelocity(targetVel +25);
                     follower.followPath(launch2);
                     fanF();
                     x = false;
@@ -301,11 +292,6 @@ public class RedAuto1 extends OpMode {
 
             case 12:
                 if(x){
-                    outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setVelocity(targetVel + 30);
-                    outtake2.setVelocity(targetVel + 30);
-                    outtake3.setVelocity(targetVel + 30);
                     follower.followPath(launch3);
                     fanF();
                     x = false;
@@ -374,7 +360,12 @@ public class RedAuto1 extends OpMode {
     }
     @Override
     public void loop() {
-
+        targetVel = 890;
+        rollerVel=1860;
+        backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtake1.setVelocity(targetVel);
+        outtake2.setVelocity(targetVel);
+        backSpinRoller.setVelocity(rollerVel);
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
         try {
@@ -402,11 +393,10 @@ public class RedAuto1 extends OpMode {
         fanRotate = hardwareMap.get(Servo.class, "fanRotate");
         cam = hardwareMap.get(Servo.class, "cam");
         outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
-        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake2");
-        outtake3 = hardwareMap.get(DcMotorEx.class, "outtake3");
+        backSpinRoller = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake3");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         follower = Constants.createFollower(hardwareMap);
-
         buildPaths();
         follower.setStartingPose(startPose);
         cam.setPosition(camPos);
@@ -416,9 +406,10 @@ public class RedAuto1 extends OpMode {
             throw new RuntimeException(e);
         }
         fanRotate.setPosition(upPos1);
+        outtake1.setVelocityPIDFCoefficients(20,0,0,20);
+        outtake2.setVelocityPIDFCoefficients(20,0,0,20);
 
     }
-
     /** This method is called continuously after Init while waiting for "play". **/
     @Override
     public void init_loop() {}
@@ -432,17 +423,14 @@ public class RedAuto1 extends OpMode {
     }
     public void launchArtifact() throws InterruptedException {
         camUp();
-        sleep(400);
+        sleep(500);
         fanRotate.setPosition(upPos2);
-        sleep(400);
+        sleep(500);
         camUp();
-        sleep(400);
+        sleep(500);
         fanRotate.setPosition(upPos3);
-        sleep(400);
+        sleep(500);
         camUp();
-        outtake1.setVelocity(0);
-        outtake2.setVelocity(0);
-        outtake3.setVelocity(0);
     }
     public void fan1(){
         fanRotate.setPosition(fanPos1);

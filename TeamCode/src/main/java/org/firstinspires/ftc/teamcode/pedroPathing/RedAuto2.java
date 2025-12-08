@@ -23,7 +23,7 @@ public class RedAuto2 extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam;
-    private DcMotorEx outtake1, outtake2, outtake3, intake;
+    private DcMotorEx outtake1, outtake2, outtake3, intake, backSpinRoller;
     private double currPosFan = .05, camPos = 1, currRelease=-.01;
     private double fanPos1 = .1, fanPos2 =  .145, fanPos3 = .195, fanPos4 = .24;
     private double upPos1 = .075, upPos2 = .125, upPos3 =.17;
@@ -31,25 +31,25 @@ public class RedAuto2 extends OpMode {
     private boolean x2 = true;
     private boolean launchStarted = false;
     private int id = -1;
-    private int count = 1, targetVel = 1150;
+    private int count = 1, targetVel = 1150, rollerVel = 1860;
     private int count2 = 1;
     private int pathState;
     private final Pose startPose = new Pose(107, 131, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(88, 96, Math.toRadians(219));
+    private final Pose launchPose = new Pose(88, 96, Math.toRadians(222));
     private final Pose launchOrder = new Pose(80,36, Math.toRadians(0));
-    private final Pose order3 = new Pose(92, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order3s = new Pose(104,54.5,Math.toRadians(0));
-    private final Pose order31 = new Pose(108, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order32 = new Pose(112, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order2 = new Pose(89, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order2s = new Pose(104,78.5,Math.toRadians(0));
-    private final Pose order21 = new Pose(108, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order22 = new Pose(112, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose park = new Pose(89, 30.5, Math.toRadians(0));
-    private final Pose order1s = new Pose(103,30.5,Math.toRadians(0));
-    private final Pose order11 = new Pose(107, 30.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order12 = new Pose(111, 30.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order3 = new Pose(92, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order3s = new Pose(103,56.5,Math.toRadians(0));
+    private final Pose order31 = new Pose(106, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order32 = new Pose(112, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2 = new Pose(89, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2s = new Pose(103,80.5,Math.toRadians(0));
+    private final Pose order21 = new Pose(106, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order22 = new Pose(112, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose park = new Pose(89, 32.5, Math.toRadians(0));
+    private final Pose order1s = new Pose(103,32.5,Math.toRadians(0));
+    private final Pose order11 = new Pose(106, 32.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order12 = new Pose(111, 32.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     // Middle (Second Set) of Artifacts from the Spike Mark.
     private Path detect;
     private PathChain launch, launch3,launch2, moveToOrder3,moveToOrder31,moveToOrder32,moveToOrder3s, moveToOrder2,moveToOrder21,moveToOrder22,moveToOrder2s, parkP, moveToOrder11,moveToOrder12,moveToOrder1s;
@@ -128,11 +128,6 @@ public class RedAuto2 extends OpMode {
 
         switch (pathState) {
             case (0):
-                outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setVelocity(targetVel);
-                outtake2.setVelocity(targetVel);
-                outtake3.setVelocity(targetVel);
                 follower.followPath(launch);
                 setPathState(2);
                 break;
@@ -208,6 +203,7 @@ public class RedAuto2 extends OpMode {
             case 5:
                 if (x) {
                     follower.followPath(moveToOrder31);
+                    sleep(250);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -220,7 +216,7 @@ public class RedAuto2 extends OpMode {
             case 6:
                 if (x) {
                     follower.followPath(moveToOrder32);
-
+                    sleep(250);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -231,11 +227,6 @@ public class RedAuto2 extends OpMode {
                 break;
             case 7:
                 if (x) { // trigger path once
-                    outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setVelocity(targetVel);
-                    outtake2.setVelocity(targetVel);
-                    outtake3.setVelocity(targetVel);
                     follower.followPath(launch2);
                     fanF();
                     x = false;
@@ -253,6 +244,7 @@ public class RedAuto2 extends OpMode {
             case 8:
                 if (x) {
                     follower.followPath(moveToOrder2);
+                    sleep(250);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -265,6 +257,7 @@ public class RedAuto2 extends OpMode {
             case 9:
                 if (x) {
                     follower.followPath(moveToOrder2s);
+                    sleep(250);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -277,6 +270,7 @@ public class RedAuto2 extends OpMode {
             case 10:
                 if (x) {
                     follower.followPath(moveToOrder21);
+                    sleep(250);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -300,11 +294,6 @@ public class RedAuto2 extends OpMode {
 
             case 12:
                 if (x) {
-                    outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake3.setDirection(DcMotorSimple.Direction.REVERSE);
-                    outtake1.setVelocity(targetVel);
-                    outtake2.setVelocity(targetVel);
-                    outtake3.setVelocity(targetVel);
                     follower.followPath(launch3);
                     fanF();
                     x = false;
@@ -343,6 +332,7 @@ public class RedAuto2 extends OpMode {
             case 15:
                 if (x) {
                     follower.followPath(moveToOrder11);
+                    sleep(250);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -373,7 +363,12 @@ public class RedAuto2 extends OpMode {
     }
     @Override
     public void loop() {
-
+        targetVel = 775;
+        rollerVel= 2000;
+        backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtake1.setVelocity(targetVel);
+        outtake2.setVelocity(targetVel);
+        backSpinRoller.setVelocity(rollerVel);
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
         try {
@@ -401,11 +396,10 @@ public class RedAuto2 extends OpMode {
         fanRotate = hardwareMap.get(Servo.class, "fanRotate");
         cam = hardwareMap.get(Servo.class, "cam");
         outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
-        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake2");
-        outtake3 = hardwareMap.get(DcMotorEx.class, "outtake3");
+        backSpinRoller = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake3");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         follower = Constants.createFollower(hardwareMap);
-
         buildPaths();
         follower.setStartingPose(startPose);
         cam.setPosition(camPos);
@@ -415,7 +409,8 @@ public class RedAuto2 extends OpMode {
             throw new RuntimeException(e);
         }
         fanRotate.setPosition(upPos1);
-
+        outtake1.setVelocityPIDFCoefficients(25,0,0,19);
+        outtake2.setVelocityPIDFCoefficients(25,0,0,19);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -431,17 +426,17 @@ public class RedAuto2 extends OpMode {
     }
     public void launchArtifact() throws InterruptedException {
         camUp();
-        sleep(400);
+        sleep(500);
         fanRotate.setPosition(upPos2);
-        sleep(400);
+        sleep(500);
         camUp();
-        sleep(400);
+        sleep(500);
         fanRotate.setPosition(upPos3);
-        sleep(400);
+        sleep(600);
         camUp();
         outtake1.setVelocity(0);
+        backSpinRoller.setVelocity(0);
         outtake2.setVelocity(0);
-        outtake3.setVelocity(0);
     }
     public void fan1(){
         fanRotate.setPosition(fanPos1);
