@@ -360,7 +360,7 @@ public class RedAuto1 extends OpMode {
     }
     @Override
     public void loop() {
-        targetVel = 890;
+        targetVel = 920;
         rollerVel=1860;
         backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         outtake1.setVelocity(targetVel);
@@ -423,13 +423,13 @@ public class RedAuto1 extends OpMode {
     }
     public void launchArtifact() throws InterruptedException {
         camUp();
-        sleep(500);
+        sleep(700);
         fanRotate.setPosition(upPos2);
-        sleep(500);
+        sleep(700);
         camUp();
-        sleep(500);
+        sleep(700);
         fanRotate.setPosition(upPos3);
-        sleep(500);
+        sleep(700);
         camUp();
     }
     public void fan1(){

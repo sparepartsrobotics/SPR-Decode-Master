@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static java.lang.Thread.sleep;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -16,6 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.function.Supplier;
 
@@ -31,6 +34,9 @@ public class sprTeleopBlueNear extends OpMode {
     private boolean automatedDrive, isCam;
     private Supplier<PathChain> pathChain1, pathChain2;
     private TelemetryManager telemetryM;
+    ElapsedTime artifactTimer = new ElapsedTime();
+    boolean artifactRunning = false;
+    int artifactState = 0;
 
     private boolean slowMode = false;
 
@@ -47,7 +53,7 @@ public class sprTeleopBlueNear extends OpMode {
 
     @Override
     public void init() {
-        BlueAuto1 x = new BlueAuto1();
+        BlueAuto2 x = new BlueAuto2();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
         follower.setStartingPose(x.getFinalPose());
@@ -67,12 +73,12 @@ public class sprTeleopBlueNear extends OpMode {
         rightFront = hardwareMap.get(DcMotorSimple.class, "rightFront");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(57, 100))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(328), 0.8))
-                .build();
-        pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 18))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(294), 0.8))
+                .build();
+        pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(53, 96))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(320), 0.8))
                 .build();
         outtake1.setVelocityPIDFCoefficients(20,0,0,20);
         outtake2.setVelocityPIDFCoefficients(20,0,0,20);
@@ -93,6 +99,7 @@ public class sprTeleopBlueNear extends OpMode {
         //Call this once per loop
         follower.update();
         telemetryM.update();
+        launchArtifact();
         if (!automatedDrive) {
             //Make the last parameter false for field-centric
             //In case the drivers want to use a "slowMode" you can scale the vectors
@@ -110,9 +117,9 @@ public class sprTeleopBlueNear extends OpMode {
                 fastModeMultiplier = .3;
             }
             if(gamepad1.leftStickButtonWasPressed()){
-                outtake1.setPower(0);
-                backspinRoller.setPower(0);
-                outtake2.setPower(0);
+                outtake1.setVelocity(0);
+                backspinRoller.setVelocity(0);
+                outtake2.setVelocity(0);
             }
             if(gamepad1.dpadUpWasPressed()){
                 cam.setPosition(camPos);
@@ -178,6 +185,7 @@ public class sprTeleopBlueNear extends OpMode {
             if(gamepad1.dpadLeftWasPressed()){
                 fanRotate.setPosition(fanRotate.getPosition() - .11);
             }
+
 //            if(gamepad1.rightBumperWasPressed()){
 //                currPosFan+=.11;
 //                fanRotate.setPosition(currPosFan);
@@ -199,12 +207,15 @@ public class sprTeleopBlueNear extends OpMode {
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 870;
+                targetVel = 900;
                 rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
+            }
+            if(gamepad1.dpadDownWasPressed() && !artifactRunning){
+                startArtifact();
             }
         }
         if(automatedDrive){
@@ -217,7 +228,7 @@ public class sprTeleopBlueNear extends OpMode {
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 870;
+                targetVel = 900;
                 rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
@@ -251,29 +262,25 @@ public class sprTeleopBlueNear extends OpMode {
             intake.setPower(0);
         }
 
-        if(gamepad1.dpadDownWasPressed()){
+        if(gamepad2.rightBumperWasPressed()){
             targetVel+=10;
-            outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setPower(targetVel);
-            outtake2.setPower(targetVel);
+            outtake1.setVelocity(targetVel);
+            outtake2.setVelocity(targetVel);
 
         }
         if(gamepad2.leftBumperWasPressed()){
             targetVel-=10;
-            outtake1.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake2.setDirection(DcMotorSimple.Direction.REVERSE);
-            outtake1.setPower(targetVel);
-            outtake2.setPower(targetVel);
+            outtake1.setVelocity(targetVel);
+            outtake2.setVelocity(targetVel);
         }
         if(gamepad1.yWasPressed()){
             automatedDrive = true;
-            follower.followPath(pathChain1.get());
+            follower.followPath(pathChain2.get());
 
         }
         if(gamepad1.xWasPressed()){
             automatedDrive = true;
-            follower.followPath(pathChain2.get());
+            follower.followPath(pathChain1.get());
 
         }
         if (automatedDrive && !follower.isBusy()) {
@@ -281,16 +288,7 @@ public class sprTeleopBlueNear extends OpMode {
             follower.startTeleopDrive();
         }
 
-        if (gamepad2.rightStickButtonWasPressed()) {
-            rollerVel+=10;
-            backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
-            backspinRoller.setVelocity(rollerVel);
-        }
-        if (gamepad2.leftStickButtonWasPressed()) {
-            rollerVel-=10;
-            backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
-            backspinRoller.setVelocity(rollerVel);
-        }
+
 
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
@@ -300,5 +298,68 @@ public class sprTeleopBlueNear extends OpMode {
         telemetry.addData("Outtake1", outtake1.getVelocity());
         telemetry.addData("Outtake2", outtake2.getVelocity());
         telemetry.addData("rollerVel", backspinRoller.getVelocity());
+    }
+    public void launchArtifact(){
+        if(!artifactRunning) return;
+        switch (artifactState) {
+
+            case 0:
+                fanRotate.setPosition(upPos3);
+                artifactTimer.reset();
+                artifactState++;
+                break;
+
+            case 1:
+                if (artifactTimer.milliseconds() > 700) {
+                    camUp();
+                    artifactTimer.reset();
+                    artifactState++;
+                }
+                break;
+
+            case 2:
+                if (artifactTimer.milliseconds() > 450) {
+                    fanRotate.setPosition(upPos2);
+                    artifactTimer.reset();
+                    artifactState++;
+                }
+                break;
+
+            case 3:
+                if (artifactTimer.milliseconds() > 450) {
+                    camUp();
+                    artifactTimer.reset();
+                    artifactState++;
+                }
+                break;
+
+            case 4:
+                if (artifactTimer.milliseconds() > 450) {
+                    fanRotate.setPosition(upPos1);
+                    artifactTimer.reset();
+                    artifactState++;
+                }
+                break;
+
+            case 5:
+                if (artifactTimer.milliseconds() > 450) {
+                    camUp();
+                    artifactRunning = false; // DONE
+                }
+                break;
+        }
+    }
+    public void startArtifact(){
+        artifactRunning = true;
+        artifactState = 0;
+        artifactTimer.reset();
+    }
+    public void camUp(){
+        if (camPos == 1) {
+            camPos = 0;
+        } else if (camPos == 0) {
+            camPos = 1;
+        }
+        cam.setPosition(camPos);
     }
 }

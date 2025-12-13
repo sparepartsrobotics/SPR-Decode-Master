@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Blue Auto Far", group = "Examples")
-public class BlueAuto1 extends OpMode {
+@Autonomous(name = "Blue Auto Far Shoot1", group = "Examples")
+public class BlueAutoFarShoot1 extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -37,7 +37,7 @@ public class BlueAuto1 extends OpMode {
     private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
     private final Pose launchPose = new Pose(59, 18, Math.toRadians(294));
-    private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
+    private final Pose finalPose = new Pose(40,10, Math.toRadians(-90));
     private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
     private final Pose order31 = new Pose(35, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
@@ -63,8 +63,8 @@ public class BlueAuto1 extends OpMode {
                 .build();
 //        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder3 = follower.pathBuilder()
-                .addPath(new BezierCurve(launchPose,launchOrder, order3))
-                .setLinearHeadingInterpolation(launchPose.getHeading(), order3s.getHeading())
+                .addPath(new BezierCurve(launchPose,finalPose))
+                .setLinearHeadingInterpolation(launchPose.getHeading(), finalPose.getHeading())
                 .build();
         moveToOrder3s = follower.pathBuilder()
                 .addPath(new BezierLine(order3, order3s))
@@ -166,7 +166,9 @@ public class BlueAuto1 extends OpMode {
                 if(!follower.isBusy()){
                     sleep(500);
                     launchArtifact();
-                    runIntake();
+                    stopIntake();
+                    outtake1.setVelocity(0);
+                    outtake2.setVelocity(0);
                     setPathState(3);
                     x = true; // reset for next state
                 }
@@ -183,11 +185,7 @@ public class BlueAuto1 extends OpMode {
                     follower.followPath(moveToOrder3); // start moving
                     x = false;
                 }
-                if(!follower.isBusy()){
-                    fan1();           // trigger fan after movement is done
-                    setPathState(4);  // advance state
-                    x = true;         // reset for next state
-                }
+                setPathState(-1);
                 break;
 
             case 4:
@@ -431,13 +429,13 @@ public class BlueAuto1 extends OpMode {
     }
     public void launchArtifact() throws InterruptedException {
         camUp();
-        sleep(700);
+        sleep(500);
         fanRotate.setPosition(upPos2);
-        sleep(700);
+        sleep(500);
         camUp();
-        sleep(700);
+        sleep(500);
         fanRotate.setPosition(upPos3);
-        sleep(700);
+        sleep(500);
         camUp();
     }
     public void fan1(){
@@ -476,6 +474,6 @@ public class BlueAuto1 extends OpMode {
     public void stop() {}
 
     public Pose getFinalPose(){
-        return order12;
+        return finalPose;
     }
 }

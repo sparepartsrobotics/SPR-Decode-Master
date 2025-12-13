@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Blue Auto Far", group = "Examples")
-public class BlueAuto1 extends OpMode {
+@Autonomous(name = "Red Auto Far Shoot 1", group = "Examples")
+public class RedAutoFarShoot1 extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -31,29 +31,30 @@ public class BlueAuto1 extends OpMode {
     private boolean x2 = true;
     private boolean launchStarted = false;
     private int id = -1;
-    private int count = 1, targetVel = 870, rollerVel = 1250;;
+    private int count = 1,targetVel = 1350, rollerVel = 1860;
     private int count2 = 1;
     private int pathState;
-    private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(59, 18, Math.toRadians(294));
-    private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
-    private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
-    private final Pose order31 = new Pose(35, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order32 = new Pose(30, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order2 = new Pose(55, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order2s = new Pose(40,78.5,Math.toRadians(180));
-    private final Pose order21 = new Pose(35, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order22 = new Pose(28, 78.5, Math.toRadians(180));
-    private final Pose park = new Pose(50, 30.5, Math.toRadians(180));
-    private final Pose order1s = new Pose(40,30.5,Math.toRadians(180));
-    private final Pose order11 = new Pose(36, 30.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order12 = new Pose(28, 30.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose startPose = new Pose(84, 6, Math.toRadians(-90)); // Start Pose of our robot.
+    private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
+    private final Pose launchPose = new Pose(85, 18, Math.toRadians(247));
+    private final Pose launchOrder = new Pose(99,10, Math.toRadians(0));
+    private final Pose order3 = new Pose(92, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order3s = new Pose(103,54.5,Math.toRadians(0));
+    private final Pose order31 = new Pose(107, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order32 = new Pose(111, 54.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2 = new Pose(89, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2s = new Pose(103,78.5,Math.toRadians(0));
+    private final Pose order21 = new Pose(107, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order22 = new Pose(111, 78.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose park = new Pose(89, 30.5, Math.toRadians(0));
+    private final Pose order1s = new Pose(103,30.5,Math.toRadians(0));
+    private final Pose order11 = new Pose(107, 30.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order12 = new Pose(111, 30.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     // Middle (Second Set) of Artifacts from the Spike Mark.
     private Path detect;
     private PathChain launch, launch3,launch2, moveToOrder3,moveToOrder31,moveToOrder32,moveToOrder3s, moveToOrder2,moveToOrder21,moveToOrder22,moveToOrder2s, parkP, moveToOrder11,moveToOrder12,moveToOrder1s;
-    /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
+
+     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     public void buildPaths(){
         detect = new Path(new BezierLine(startPose, detectPose));
         detect.setConstantHeadingInterpolation(startPose.getHeading());
@@ -63,8 +64,8 @@ public class BlueAuto1 extends OpMode {
                 .build();
 //        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder3 = follower.pathBuilder()
-                .addPath(new BezierCurve(launchPose,launchOrder, order3))
-                .setLinearHeadingInterpolation(launchPose.getHeading(), order3s.getHeading())
+                .addPath(new BezierCurve(launchPose,launchOrder))
+                .setLinearHeadingInterpolation(launchPose.getHeading(), launchOrder.getHeading())
                 .build();
         moveToOrder3s = follower.pathBuilder()
                 .addPath(new BezierLine(order3, order3s))
@@ -125,9 +126,7 @@ public class BlueAuto1 extends OpMode {
     public void autonomousPathUpdate() throws InterruptedException {
         switch (pathState) {
             case(0):
-                sleep(2000);
                 follower.followPath(launch);
-
                 setPathState(2);
                 break;
             case 1:
@@ -164,7 +163,8 @@ public class BlueAuto1 extends OpMode {
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
                 if(!follower.isBusy()){
-                    sleep(500);
+                    stopIntake();
+                    sleep(1500);
                     launchArtifact();
                     runIntake();
                     setPathState(3);
@@ -185,7 +185,7 @@ public class BlueAuto1 extends OpMode {
                 }
                 if(!follower.isBusy()){
                     fan1();           // trigger fan after movement is done
-                    setPathState(4);  // advance state
+                    setPathState(-1);  // advance state
                     x = true;         // reset for next state
                 }
                 break;
@@ -233,7 +233,7 @@ public class BlueAuto1 extends OpMode {
                     x = false;
                 }
                 if(!follower.isBusy()){
-                    sleep(500);
+                    sleep(1000);
                     launchArtifact();
 
                     runIntake();
@@ -294,11 +294,10 @@ public class BlueAuto1 extends OpMode {
                 if(x){
                     follower.followPath(launch3);
                     fanF();
-                    sleep(500);
                     x = false;
                 }
                 if(!follower.isBusy()){
-                    sleep(500);
+                    sleep(1000);
                     launchArtifact();
                     runIntake();
                     setPathState(13); // finish auto
@@ -362,7 +361,7 @@ public class BlueAuto1 extends OpMode {
     @Override
     public void loop() {
         targetVel = 920;
-        rollerVel = 1860;
+        rollerVel=1860;
         backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         outtake1.setVelocity(targetVel);
         outtake2.setVelocity(targetVel);
@@ -381,12 +380,6 @@ public class BlueAuto1 extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("ID: ", id);
-        telemetry.addData("position", follower.getPose());
-        telemetry.addData("velocity", follower.getVelocity());
-        telemetry.addData("Indexer Pos: ", fanRotate.getPosition());
-        telemetry.addData("Outtake1", outtake1.getVelocity());
-        telemetry.addData("Outtake2", outtake2.getVelocity());
-        telemetry.addData("rollerVel", backSpinRoller.getVelocity());
         telemetry.update();
     }
 
@@ -417,7 +410,6 @@ public class BlueAuto1 extends OpMode {
         outtake2.setVelocityPIDFCoefficients(20,0,0,20);
 
     }
-
     /** This method is called continuously after Init while waiting for "play". **/
     @Override
     public void init_loop() {}
@@ -476,6 +468,6 @@ public class BlueAuto1 extends OpMode {
     public void stop() {}
 
     public Pose getFinalPose(){
-        return order12;
+        return launchOrder;
     }
 }

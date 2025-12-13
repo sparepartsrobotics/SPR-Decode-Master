@@ -1,8 +1,6 @@
 
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import static java.lang.Thread.sleep;
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -21,14 +19,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.BlueAuto1;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-
 import java.util.function.Supplier;
 
 @Configurable
 @TeleOp
-public class sprTeleopRedNear extends OpMode {
+public class sprTeleopRedNearShoot1 extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1, park2;
@@ -57,7 +52,7 @@ public class sprTeleopRedNear extends OpMode {
 
     @Override
     public void init() {
-        RedAuto2 x = new RedAuto2();
+        RedAutoNearShoot1 x = new RedAutoNearShoot1();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
         follower.setStartingPose(x.getFinalPose());
@@ -77,7 +72,7 @@ public class sprTeleopRedNear extends OpMode {
         rightFront = hardwareMap.get(DcMotorSimple.class, "rightFront");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(85, 18))))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(85, 19))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(246), 0.8))
                 .build();
         pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation

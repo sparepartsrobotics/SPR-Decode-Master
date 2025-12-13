@@ -36,7 +36,7 @@ public class RedAuto2 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(107, 131, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(88, 96, Math.toRadians(222));
+    private final Pose launchPose = new Pose(85, 93, Math.toRadians(222));
     private final Pose launchOrder = new Pose(80,36, Math.toRadians(0));
     private final Pose order3 = new Pose(92, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(103,56.5,Math.toRadians(0));
@@ -409,8 +409,8 @@ public class RedAuto2 extends OpMode {
             throw new RuntimeException(e);
         }
         fanRotate.setPosition(upPos1);
-        outtake1.setVelocityPIDFCoefficients(25,0,0,19);
-        outtake2.setVelocityPIDFCoefficients(25,0,0,19);
+        outtake1.setVelocityPIDFCoefficients(20,0,0,20);
+        outtake2.setVelocityPIDFCoefficients(20,0,0,20);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -432,11 +432,8 @@ public class RedAuto2 extends OpMode {
         camUp();
         sleep(500);
         fanRotate.setPosition(upPos3);
-        sleep(600);
+        sleep(500);
         camUp();
-        outtake1.setVelocity(0);
-        backSpinRoller.setVelocity(0);
-        outtake2.setVelocity(0);
     }
     public void fan1(){
         fanRotate.setPosition(fanPos1);

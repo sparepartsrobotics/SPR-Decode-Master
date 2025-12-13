@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 @Configurable
 @TeleOp
-public class sprTeleopRedNear extends OpMode {
+public class sprTeleopRedFarShoot1 extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1, park2;
@@ -57,7 +57,7 @@ public class sprTeleopRedNear extends OpMode {
 
     @Override
     public void init() {
-        RedAuto2 x = new RedAuto2();
+        RedAutoFarShoot1 x = new RedAutoFarShoot1();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
         follower.setStartingPose(x.getFinalPose());

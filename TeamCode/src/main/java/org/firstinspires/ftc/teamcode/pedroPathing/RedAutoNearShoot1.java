@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Blue Auto Far", group = "Examples")
-public class BlueAuto1 extends OpMode {
+@Autonomous(name = "Red Auto Near Shoot1", group = "Examples")
+public class RedAutoNearShoot1 extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -31,28 +31,29 @@ public class BlueAuto1 extends OpMode {
     private boolean x2 = true;
     private boolean launchStarted = false;
     private int id = -1;
-    private int count = 1, targetVel = 870, rollerVel = 1250;;
+    private int count = 1, targetVel = 1150, rollerVel = 1860;
     private int count2 = 1;
     private int pathState;
-    private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(59, 18, Math.toRadians(294));
-    private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
-    private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
-    private final Pose order31 = new Pose(35, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order32 = new Pose(30, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order2 = new Pose(55, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order2s = new Pose(40,78.5,Math.toRadians(180));
-    private final Pose order21 = new Pose(35, 78.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order22 = new Pose(28, 78.5, Math.toRadians(180));
-    private final Pose park = new Pose(50, 30.5, Math.toRadians(180));
-    private final Pose order1s = new Pose(40,30.5,Math.toRadians(180));
-    private final Pose order11 = new Pose(36, 30.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order12 = new Pose(28, 30.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose startPose = new Pose(107, 131, Math.toRadians(-90)); // Start Pose of our robot.
+    private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
+    private final Pose launchPose = new Pose(85, 93, Math.toRadians(225));
+    private final Pose launchOrder = new Pose(124,100, Math.toRadians(180));
+    private final Pose order3 = new Pose(92, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order3s = new Pose(103,56.5,Math.toRadians(0));
+    private final Pose order31 = new Pose(106, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order32 = new Pose(112, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2 = new Pose(89, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order2s = new Pose(103,80.5,Math.toRadians(0));
+    private final Pose order21 = new Pose(106, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order22 = new Pose(112, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose park = new Pose(89, 32.5, Math.toRadians(0));
+    private final Pose order1s = new Pose(103,32.5,Math.toRadians(0));
+    private final Pose order11 = new Pose(106, 32.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order12 = new Pose(111, 32.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     // Middle (Second Set) of Artifacts from the Spike Mark.
     private Path detect;
     private PathChain launch, launch3,launch2, moveToOrder3,moveToOrder31,moveToOrder32,moveToOrder3s, moveToOrder2,moveToOrder21,moveToOrder22,moveToOrder2s, parkP, moveToOrder11,moveToOrder12,moveToOrder1s;
+
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     public void buildPaths(){
         detect = new Path(new BezierLine(startPose, detectPose));
@@ -63,8 +64,8 @@ public class BlueAuto1 extends OpMode {
                 .build();
 //        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         moveToOrder3 = follower.pathBuilder()
-                .addPath(new BezierCurve(launchPose,launchOrder, order3))
-                .setLinearHeadingInterpolation(launchPose.getHeading(), order3s.getHeading())
+                .addPath(new BezierCurve(launchPose,launchOrder))
+                .setLinearHeadingInterpolation(launchPose.getHeading(), launchOrder.getHeading())
                 .build();
         moveToOrder3s = follower.pathBuilder()
                 .addPath(new BezierLine(order3, order3s))
@@ -123,34 +124,31 @@ public class BlueAuto1 extends OpMode {
                 .build();
     }
     public void autonomousPathUpdate() throws InterruptedException {
-        switch (pathState) {
-            case(0):
-                sleep(2000);
-                follower.followPath(launch);
 
+
+        switch (pathState) {
+            case (0):
+                follower.followPath(launch);
                 setPathState(2);
                 break;
             case 1:
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     HuskyLens.Block[] blocks = huskyLens.blocks();
                     sleep(200);
-                    if(blocks.length > 0){
+                    if (blocks.length > 0) {
                         telemetry.addData("Block count", blocks.length);
                         telemetry.addData("ID: ", blocks[0].id);
                         id = blocks[0].id;
                         if (blocks[0].id == 1) {
                             setPathState(2);
                             telemetry.update();
-                        }
-                        else if(blocks[0].id == 2){
+                        } else if (blocks[0].id == 2) {
                             setPathState(2);
                             telemetry.update();
-                        }
-                        else if(blocks[0].id == 3){
+                        } else if (blocks[0].id == 3) {
                             setPathState(2);
                             telemetry.update();
-                        }
-                        else{
+                        } else {
                             setPathState(-1);
                             telemetry.update();
                         }
@@ -163,7 +161,7 @@ public class BlueAuto1 extends OpMode {
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     sleep(500);
                     launchArtifact();
                     runIntake();
@@ -179,23 +177,23 @@ public class BlueAuto1 extends OpMode {
 //                setPathState(-1);
 
             case 3:
-                if(x){ // trigger path once
+                if (x) { // trigger path once
                     follower.followPath(moveToOrder3); // start moving
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     fan1();           // trigger fan after movement is done
-                    setPathState(4);  // advance state
+                    setPathState(-1);  // advance state
                     x = true;         // reset for next state
                 }
                 break;
 
             case 4:
-                if(x){
+                if (x) {
                     follower.followPath(moveToOrder3s);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     fan2();
                     setPathState(5);
                     x = true;
@@ -203,11 +201,12 @@ public class BlueAuto1 extends OpMode {
                 break;
 
             case 5:
-                if(x){
+                if (x) {
                     follower.followPath(moveToOrder31);
+                    sleep(250);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     fan3();
                     setPathState(6);
                     x = true;
@@ -215,24 +214,24 @@ public class BlueAuto1 extends OpMode {
                 break;
 
             case 6:
-                if(x){
+                if (x) {
                     follower.followPath(moveToOrder32);
-
+                    sleep(250);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     stopIntake();
                     setPathState(7); // end auto
                     x = true;
                 }
                 break;
             case 7:
-                if(x){ // trigger path once
+                if (x) { // trigger path once
                     follower.followPath(launch2);
                     fanF();
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     sleep(500);
                     launchArtifact();
 
@@ -243,11 +242,12 @@ public class BlueAuto1 extends OpMode {
                 break;
 
             case 8:
-                if(x){
+                if (x) {
                     follower.followPath(moveToOrder2);
+                    sleep(250);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     fan1();
                     setPathState(9);
                     x = true;
@@ -255,11 +255,12 @@ public class BlueAuto1 extends OpMode {
                 break;
 
             case 9:
-                if(x){
+                if (x) {
                     follower.followPath(moveToOrder2s);
+                    sleep(250);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     fan2();
                     setPathState(10);
                     x = true;
@@ -267,11 +268,12 @@ public class BlueAuto1 extends OpMode {
                 break;
 
             case 10:
-                if(x){
+                if (x) {
                     follower.followPath(moveToOrder21);
+                    sleep(250);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     fan3();
                     setPathState(11);
                     x = true;
@@ -279,11 +281,11 @@ public class BlueAuto1 extends OpMode {
                 break;
 
             case 11:
-                if(x){
+                if (x) {
                     follower.followPath(moveToOrder22);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     stopIntake();
                     setPathState(12); // end auto
                     x = true;
@@ -291,13 +293,12 @@ public class BlueAuto1 extends OpMode {
                 break;
 
             case 12:
-                if(x){
+                if (x) {
                     follower.followPath(launch3);
                     fanF();
-                    sleep(500);
                     x = false;
                 }
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     sleep(500);
                     launchArtifact();
                     runIntake();
@@ -331,6 +332,7 @@ public class BlueAuto1 extends OpMode {
             case 15:
                 if (x) {
                     follower.followPath(moveToOrder11);
+                    sleep(250);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -361,8 +363,8 @@ public class BlueAuto1 extends OpMode {
     }
     @Override
     public void loop() {
-        targetVel = 920;
-        rollerVel = 1860;
+        targetVel = 775;
+        rollerVel= 2000;
         backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         outtake1.setVelocity(targetVel);
         outtake2.setVelocity(targetVel);
@@ -381,12 +383,6 @@ public class BlueAuto1 extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("ID: ", id);
-        telemetry.addData("position", follower.getPose());
-        telemetry.addData("velocity", follower.getVelocity());
-        telemetry.addData("Indexer Pos: ", fanRotate.getPosition());
-        telemetry.addData("Outtake1", outtake1.getVelocity());
-        telemetry.addData("Outtake2", outtake2.getVelocity());
-        telemetry.addData("rollerVel", backSpinRoller.getVelocity());
         telemetry.update();
     }
 
@@ -415,7 +411,6 @@ public class BlueAuto1 extends OpMode {
         fanRotate.setPosition(upPos1);
         outtake1.setVelocityPIDFCoefficients(20,0,0,20);
         outtake2.setVelocityPIDFCoefficients(20,0,0,20);
-
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -431,13 +426,13 @@ public class BlueAuto1 extends OpMode {
     }
     public void launchArtifact() throws InterruptedException {
         camUp();
-        sleep(700);
+        sleep(500);
         fanRotate.setPosition(upPos2);
-        sleep(700);
+        sleep(500);
         camUp();
-        sleep(700);
+        sleep(500);
         fanRotate.setPosition(upPos3);
-        sleep(700);
+        sleep(500);
         camUp();
     }
     public void fan1(){
@@ -476,6 +471,6 @@ public class BlueAuto1 extends OpMode {
     public void stop() {}
 
     public Pose getFinalPose(){
-        return order12;
+        return launchOrder;
     }
 }
