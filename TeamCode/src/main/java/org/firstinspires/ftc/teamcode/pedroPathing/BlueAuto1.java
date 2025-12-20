@@ -36,7 +36,7 @@ public class BlueAuto1 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(59, 18, Math.toRadians(294));
+    private final Pose launchPose = new Pose(59, 18, Math.toRadians(291));
     private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
     private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
@@ -97,12 +97,12 @@ public class BlueAuto1 extends OpMode {
                 .setLinearHeadingInterpolation(order21.getHeading(), order22.getHeading())
                 .build();
         launch2 = follower.pathBuilder()
-                .addPath(new BezierLine(order32,launchPose))
-                .setLinearHeadingInterpolation(order32.getHeading(), launchPose.getHeading())
+                .addPath(new BezierLine(order12,launchPose))
+                .setLinearHeadingInterpolation(order12.getHeading(), launchPose.getHeading())
                 .build();
         launch3 = follower.pathBuilder()
-                .addPath(new BezierLine(order22,launchPose))
-                .setLinearHeadingInterpolation(order22.getHeading(), launchPose.getHeading())
+                .addPath(new BezierLine(order32,launchPose))
+                .setLinearHeadingInterpolation(order32.getHeading(), launchPose.getHeading())
                 .build();
         parkP = follower.pathBuilder()
                 .addPath(new BezierLine(launchPose,park))
@@ -130,33 +130,6 @@ public class BlueAuto1 extends OpMode {
 
                 setPathState(2);
                 break;
-            case 1:
-                if(!follower.isBusy()){
-                    HuskyLens.Block[] blocks = huskyLens.blocks();
-                    sleep(200);
-                    if(blocks.length > 0){
-                        telemetry.addData("Block count", blocks.length);
-                        telemetry.addData("ID: ", blocks[0].id);
-                        id = blocks[0].id;
-                        if (blocks[0].id == 1) {
-                            setPathState(2);
-                            telemetry.update();
-                        }
-                        else if(blocks[0].id == 2){
-                            setPathState(2);
-                            telemetry.update();
-                        }
-                        else if(blocks[0].id == 3){
-                            setPathState(2);
-                            telemetry.update();
-                        }
-                        else{
-                            setPathState(-1);
-                            telemetry.update();
-                        }
-                    }
-                }
-                break;
             case 2:
             /* You could check for
             - Follower State: "if(!follower.isBusy()) {}"
@@ -180,7 +153,7 @@ public class BlueAuto1 extends OpMode {
 
             case 3:
                 if(x){ // trigger path once
-                    follower.followPath(moveToOrder3); // start moving
+                    follower.followPath(parkP); // start moving
                     x = false;
                 }
                 if(!follower.isBusy()){
@@ -192,7 +165,7 @@ public class BlueAuto1 extends OpMode {
 
             case 4:
                 if(x){
-                    follower.followPath(moveToOrder3s);
+                    follower.followPath(moveToOrder1s);
                     x = false;
                 }
                 if(!follower.isBusy()){
@@ -204,7 +177,7 @@ public class BlueAuto1 extends OpMode {
 
             case 5:
                 if(x){
-                    follower.followPath(moveToOrder31);
+                    follower.followPath(moveToOrder11);
                     x = false;
                 }
                 if(!follower.isBusy()){
@@ -216,7 +189,7 @@ public class BlueAuto1 extends OpMode {
 
             case 6:
                 if(x){
-                    follower.followPath(moveToOrder32);
+                    follower.followPath(moveToOrder12);
 
                     x = false;
                 }
@@ -244,7 +217,7 @@ public class BlueAuto1 extends OpMode {
 
             case 8:
                 if(x){
-                    follower.followPath(moveToOrder2);
+                    follower.followPath(moveToOrder3);
                     x = false;
                 }
                 if(!follower.isBusy()){
@@ -256,7 +229,7 @@ public class BlueAuto1 extends OpMode {
 
             case 9:
                 if(x){
-                    follower.followPath(moveToOrder2s);
+                    follower.followPath(moveToOrder3s);
                     x = false;
                 }
                 if(!follower.isBusy()){
@@ -268,7 +241,7 @@ public class BlueAuto1 extends OpMode {
 
             case 10:
                 if(x){
-                    follower.followPath(moveToOrder21);
+                    follower.followPath(moveToOrder31);
                     x = false;
                 }
                 if(!follower.isBusy()){
@@ -280,7 +253,7 @@ public class BlueAuto1 extends OpMode {
 
             case 11:
                 if(x){
-                    follower.followPath(moveToOrder22);
+                    follower.followPath(moveToOrder32);
                     x = false;
                 }
                 if(!follower.isBusy()){
@@ -309,16 +282,22 @@ public class BlueAuto1 extends OpMode {
             case 13:
                 if (x) {
                     follower.followPath(parkP);
+                    outtake1.setVelocity(0);
+                    outtake2.setVelocity(0);
+                    backSpinRoller.setVelocity(0);
+                    setPathState(-1);
                     x = false;
                 }
                 if(!follower.isBusy()){
                     fan1();
-                    setPathState(14);
+
+                    stopIntake();
+
                     x = true;
                 }
             case 14:
                 if (x) { // trigger path once
-                    follower.followPath(moveToOrder1s); // start moving
+                    follower.followPath(moveToOrder2s); // start moving
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -330,7 +309,7 @@ public class BlueAuto1 extends OpMode {
 
             case 15:
                 if (x) {
-                    follower.followPath(moveToOrder11);
+                    follower.followPath(moveToOrder21);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -342,7 +321,7 @@ public class BlueAuto1 extends OpMode {
 
             case 16:
                 if (x) {
-                    follower.followPath(moveToOrder12);
+                    follower.followPath(moveToOrder22);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -476,6 +455,6 @@ public class BlueAuto1 extends OpMode {
     public void stop() {}
 
     public Pose getFinalPose(){
-        return order12;
+        return order2;
     }
 }

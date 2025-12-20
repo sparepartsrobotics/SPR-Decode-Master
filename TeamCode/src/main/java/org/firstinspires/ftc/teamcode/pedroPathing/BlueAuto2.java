@@ -357,8 +357,8 @@ public class BlueAuto2 extends OpMode {
     }
     @Override
     public void loop() {
-        targetVel = 790;
-        rollerVel = 1950;
+        targetVel = 780;
+        rollerVel = 1800;
         backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         outtake1.setVelocity(targetVel);
         outtake2.setVelocity(targetVel);

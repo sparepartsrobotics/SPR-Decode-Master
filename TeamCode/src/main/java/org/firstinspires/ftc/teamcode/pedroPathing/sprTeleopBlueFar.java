@@ -300,54 +300,54 @@ public class sprTeleopBlueFar extends OpMode {
         telemetry.addData("rollerVel", backspinRoller.getVelocity());
     }
     public void launchArtifact(){
-       if(!artifactRunning) return;
-            switch (artifactState) {
+        if(!artifactRunning) return;
+        switch (artifactState) {
 
-                case 0:
-                    fanRotate.setPosition(upPos3);
+            case 0:
+                fanRotate.setPosition(upPos3);
+                artifactTimer.reset();
+                artifactState++;
+                break;
+
+            case 1:
+                if (artifactTimer.milliseconds() > 700) {
+                    camUp();
                     artifactTimer.reset();
                     artifactState++;
-                    break;
+                }
+                break;
 
-                case 1:
-                    if (artifactTimer.milliseconds() > 700) {
-                        camUp();
-                        artifactTimer.reset();
-                        artifactState++;
-                    }
-                    break;
+            case 2:
+                if (artifactTimer.milliseconds() > 450) {
+                    fanRotate.setPosition(upPos2);
+                    artifactTimer.reset();
+                    artifactState++;
+                }
+                break;
 
-                case 2:
-                    if (artifactTimer.milliseconds() > 450) {
-                        fanRotate.setPosition(upPos2);
-                        artifactTimer.reset();
-                        artifactState++;
-                    }
-                    break;
+            case 3:
+                if (artifactTimer.milliseconds() > 450) {
+                    camUp();
+                    artifactTimer.reset();
+                    artifactState++;
+                }
+                break;
 
-                case 3:
-                    if (artifactTimer.milliseconds() > 450) {
-                        camUp();
-                        artifactTimer.reset();
-                        artifactState++;
-                    }
-                    break;
+            case 4:
+                if (artifactTimer.milliseconds() > 450) {
+                    fanRotate.setPosition(upPos1);
+                    artifactTimer.reset();
+                    artifactState++;
+                }
+                break;
 
-                case 4:
-                    if (artifactTimer.milliseconds() > 450) {
-                        fanRotate.setPosition(upPos1);
-                        artifactTimer.reset();
-                        artifactState++;
-                    }
-                    break;
-
-                case 5:
-                    if (artifactTimer.milliseconds() > 450) {
-                        camUp();
-                        artifactRunning = false; // DONE
-                    }
-                    break;
-            }
+            case 5:
+                if (artifactTimer.milliseconds() > 450) {
+                    camUp();
+                    artifactRunning = false; // DONE
+                }
+                break;
+        }
     }
     public void startArtifact(){
         artifactRunning = true;
