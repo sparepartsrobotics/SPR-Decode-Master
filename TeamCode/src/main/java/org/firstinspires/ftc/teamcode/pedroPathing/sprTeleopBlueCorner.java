@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 @Configurable
 @TeleOp
-public class sprTeleopBlueFar extends OpMode {
+public class sprTeleopBlueCorner extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1, park2;
@@ -53,10 +53,9 @@ public class sprTeleopBlueFar extends OpMode {
 
     @Override
     public void init() {
-        BlueAuto1 x = new BlueAuto1();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
-        follower.setStartingPose(x.getFinalPose());
+        follower.setStartingPose(new Pose(137,7, Math.toRadians(-90)));
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
@@ -74,7 +73,7 @@ public class sprTeleopBlueFar extends OpMode {
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 18))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(294), 0.8))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(296), 0.8))
                 .build();
         pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(53, 96))))
@@ -215,7 +214,6 @@ public class sprTeleopBlueFar extends OpMode {
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
-//
             }
             if(gamepad1.bWasPressed()){
                 targetVel = 900;

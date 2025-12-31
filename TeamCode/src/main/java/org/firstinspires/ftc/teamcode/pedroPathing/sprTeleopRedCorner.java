@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import static java.lang.Thread.sleep;
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 
 @Configurable
 @TeleOp
-public class sprTeleopBlueFar extends OpMode {
+public class sprTeleopRedCorner extends OpMode {
     private Follower follower;
     private HuskyLens huskyLens;
     private Servo fanRotate, cam, park1, park2;
@@ -53,10 +54,9 @@ public class sprTeleopBlueFar extends OpMode {
 
     @Override
     public void init() {
-        BlueAuto1 x = new BlueAuto1();
         follower = Constants.createFollower(hardwareMap);
         MecanumConstants drive = new MecanumConstants();
-        follower.setStartingPose(x.getFinalPose());
+        follower.setStartingPose(new Pose(0,0, Math.toRadians(-90)));
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
@@ -73,12 +73,12 @@ public class sprTeleopBlueFar extends OpMode {
         rightFront = hardwareMap.get(DcMotorSimple.class, "rightFront");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 18))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(294), 0.8))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(85, 19))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(246), 0.8))
                 .build();
         pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(53, 96))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(320), 0.8))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(85, 93))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(222), 0.8))
                 .build();
         outtake1.setVelocityPIDFCoefficients(20,0,0,20);
         outtake2.setVelocityPIDFCoefficients(20,0,0,20);
@@ -215,7 +215,6 @@ public class sprTeleopBlueFar extends OpMode {
                 outtake1.setVelocity(targetVel);
                 backspinRoller.setVelocity(rollerVel);
                 outtake2.setVelocity(targetVel);
-//
             }
             if(gamepad1.bWasPressed()){
                 targetVel = 900;
@@ -312,53 +311,105 @@ public class sprTeleopBlueFar extends OpMode {
     }
     public void launchArtifact(){
         if(!artifactRunning) return;
-        switch (artifactState) {
+        if(targetVel == 900){
+            switch (artifactState) {
 
-            case 0:
-                fanRotate.setPosition(upPos3);
-                artifactTimer.reset();
-                artifactState++;
-                break;
-
-            case 1:
-                if (artifactTimer.milliseconds() > 700) {
-                    camUp();
+                case 0:
+                    fanRotate.setPosition(upPos3);
                     artifactTimer.reset();
                     artifactState++;
-                }
-                break;
+                    break;
 
-            case 2:
-                if (artifactTimer.milliseconds() > 450) {
-                    fanRotate.setPosition(upPos2);
-                    artifactTimer.reset();
-                    artifactState++;
-                }
-                break;
+                case 1:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
 
-            case 3:
-                if (artifactTimer.milliseconds() > 450) {
-                    camUp();
-                    artifactTimer.reset();
-                    artifactState++;
-                }
-                break;
+                case 2:
+                    if (artifactTimer.milliseconds() > 700) {
+                        fanRotate.setPosition(upPos2);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
 
-            case 4:
-                if (artifactTimer.milliseconds() > 450) {
-                    fanRotate.setPosition(upPos1);
-                    artifactTimer.reset();
-                    artifactState++;
-                }
-                break;
+                case 3:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
 
-            case 5:
-                if (artifactTimer.milliseconds() > 450) {
-                    camUp();
-                    artifactRunning = false; // DONE
-                }
-                break;
+                case 4:
+                    if (artifactTimer.milliseconds() > 700) {
+                        fanRotate.setPosition(upPos1);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 5:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactRunning = false; // DONE
+                    }
+                    break;
+            }
         }
+        else{
+            switch (artifactState) {
+
+                case 0:
+                    fanRotate.setPosition(upPos3);
+                    artifactTimer.reset();
+                    artifactState++;
+                    break;
+
+                case 1:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 2:
+                    if (artifactTimer.milliseconds() > 450) {
+                        fanRotate.setPosition(upPos2);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 3:
+                    if (artifactTimer.milliseconds() > 450) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 4:
+                    if (artifactTimer.milliseconds() > 450) {
+                        fanRotate.setPosition(upPos1);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 5:
+                    if (artifactTimer.milliseconds() > 450) {
+                        camUp();
+                        artifactRunning = false; // DONE
+                    }
+                    break;
+            }
+        }
+
     }
     public void startArtifact(){
         artifactRunning = true;
