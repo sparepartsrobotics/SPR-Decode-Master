@@ -177,6 +177,16 @@ public class sprTeleopRedNear extends OpMode {
             if(gamepad2.dpadDownWasPressed()){
                 park1.setPosition(.75);
                 park2.setPosition(.75);
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                while(true){
+                    leftRear.setPower(.5);
+                    rightRear.setPower(.5);
+                }
+
             }
             if(gamepad2.aWasPressed()){
                 park1.setPosition(.25);
@@ -305,53 +315,105 @@ public class sprTeleopRedNear extends OpMode {
     }
     public void launchArtifact(){
         if(!artifactRunning) return;
-        switch (artifactState) {
+        if(targetVel == 900){
+            switch (artifactState) {
 
-            case 0:
-                fanRotate.setPosition(upPos3);
-                artifactTimer.reset();
-                artifactState++;
-                break;
-
-            case 1:
-                if (artifactTimer.milliseconds() > 700) {
-                    camUp();
+                case 0:
+                    fanRotate.setPosition(upPos3);
                     artifactTimer.reset();
                     artifactState++;
-                }
-                break;
+                    break;
 
-            case 2:
-                if (artifactTimer.milliseconds() > 450) {
-                    fanRotate.setPosition(upPos2);
-                    artifactTimer.reset();
-                    artifactState++;
-                }
-                break;
+                case 1:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
 
-            case 3:
-                if (artifactTimer.milliseconds() > 450) {
-                    camUp();
-                    artifactTimer.reset();
-                    artifactState++;
-                }
-                break;
+                case 2:
+                    if (artifactTimer.milliseconds() > 700) {
+                        fanRotate.setPosition(upPos2);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
 
-            case 4:
-                if (artifactTimer.milliseconds() > 450) {
-                    fanRotate.setPosition(upPos1);
-                    artifactTimer.reset();
-                    artifactState++;
-                }
-                break;
+                case 3:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
 
-            case 5:
-                if (artifactTimer.milliseconds() > 450) {
-                    camUp();
-                    artifactRunning = false; // DONE
-                }
-                break;
+                case 4:
+                    if (artifactTimer.milliseconds() > 700) {
+                        fanRotate.setPosition(upPos1);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 5:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactRunning = false; // DONE
+                    }
+                    break;
+            }
         }
+        else{
+            switch (artifactState) {
+
+                case 0:
+                    fanRotate.setPosition(upPos3);
+                    artifactTimer.reset();
+                    artifactState++;
+                    break;
+
+                case 1:
+                    if (artifactTimer.milliseconds() > 700) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 2:
+                    if (artifactTimer.milliseconds() > 450) {
+                        fanRotate.setPosition(upPos2);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 3:
+                    if (artifactTimer.milliseconds() > 450) {
+                        camUp();
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 4:
+                    if (artifactTimer.milliseconds() > 450) {
+                        fanRotate.setPosition(upPos1);
+                        artifactTimer.reset();
+                        artifactState++;
+                    }
+                    break;
+
+                case 5:
+                    if (artifactTimer.milliseconds() > 450) {
+                        camUp();
+                        artifactRunning = false; // DONE
+                    }
+                    break;
+            }
+        }
+
     }
     public void startArtifact(){
         artifactRunning = true;

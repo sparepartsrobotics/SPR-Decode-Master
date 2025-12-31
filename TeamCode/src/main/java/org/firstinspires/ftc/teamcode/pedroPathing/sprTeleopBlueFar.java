@@ -173,6 +173,16 @@ public class sprTeleopBlueFar extends OpMode {
             if(gamepad2.dpadDownWasPressed()){
                 park1.setPosition(.75);
                 park2.setPosition(.75);
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                while(true){
+                    leftRear.setPower(.5);
+                    rightRear.setPower(.5);
+                }
+
             }
             if(gamepad2.aWasPressed()){
                 park1.setPosition(.25);
@@ -201,10 +211,11 @@ public class sprTeleopBlueFar extends OpMode {
             if(gamepad1.aWasPressed()){
                 targetVel=790;
                 rollerVel = 1860;
-                backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
-                outtake1.setVelocity(targetVel);
-                backspinRoller.setVelocity(rollerVel);
-                outtake2.setVelocity(targetVel);
+//                backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+//                outtake1.setVelocity(targetVel);
+//                backspinRoller.setVelocity(rollerVel);
+//                outtake2.setVelocity(targetVel);
+                backspinRoller.setPower(1);
             }
             if(gamepad1.bWasPressed()){
                 targetVel = 900;

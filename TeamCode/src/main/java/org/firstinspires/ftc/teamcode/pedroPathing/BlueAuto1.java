@@ -36,7 +36,7 @@ public class BlueAuto1 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(60, 6, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(59, 18, Math.toRadians(291));
+    private final Pose launchPose = new Pose(59, 18, Math.toRadians(293));
     private final Pose launchOrder = new Pose(64,36, Math.toRadians(180));
     private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));

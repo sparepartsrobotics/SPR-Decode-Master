@@ -406,8 +406,8 @@ public class RedAuto1 extends OpMode {
             throw new RuntimeException(e);
         }
         fanRotate.setPosition(upPos1);
-        outtake1.setVelocityPIDFCoefficients(20,0,0,20);
-        outtake2.setVelocityPIDFCoefficients(20,0,0,20);
+        outtake1.setVelocityPIDFCoefficients(20,0,0.01,20);
+        outtake2.setVelocityPIDFCoefficients(20,0,0.01,20);
 
     }
     /** This method is called continuously after Init while waiting for "play". **/
