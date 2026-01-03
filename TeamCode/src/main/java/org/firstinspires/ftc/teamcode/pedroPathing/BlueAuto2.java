@@ -31,12 +31,13 @@ public class BlueAuto2 extends OpMode {
     private boolean x2 = true;
     private boolean launchStarted = false;
      private int id = -1;
-    private int count = 1, targetVel=1150,rollerVel=1860;
+    private boolean shooterSet = false;
+    private int count = 1, targetVel=780,rollerVel=1860;
     private int count2 = 1;
     private int pathState;
     private final Pose startPose = new Pose(35, 131, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(67, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(53, 96, Math.toRadians(320));
+    private final Pose launchPose = new Pose(53, 96, Math.toRadians(319));
     private final Pose launchOrder = new Pose(59,36, Math.toRadians(180));
     private final Pose order3 = new Pose(50, 54.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(40,54.5,Math.toRadians(180));
@@ -127,6 +128,12 @@ public class BlueAuto2 extends OpMode {
 
         switch (pathState) {
             case (0):
+                if (!shooterSet) {
+                    outtake1.setVelocity(targetVel);
+                    outtake2.setVelocity(targetVel);
+                    backSpinRoller.setVelocity(rollerVel);
+                    shooterSet = true;
+                }
                 sleep(1500);
                 follower.followPath(launch);
                 setPathState(2);
@@ -156,17 +163,14 @@ public class BlueAuto2 extends OpMode {
                 }
                 break;
             case 2:
-            /* You could check for
-            - Follower State: "if(!follower.isBusy()) {}"
-            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-            - Robot Position: "if(follower.getPose().getX() > 36) {}"
-            */
+
                 if (!follower.isBusy()) {
                     sleep(500);
                     launchArtifact();
                     runIntake();
+                    shooterSet = false;
                     setPathState(3);
-                    x = true; // reset for next state
+                    x = true;
                 }
                 break;
             /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
@@ -357,12 +361,7 @@ public class BlueAuto2 extends OpMode {
     }
     @Override
     public void loop() {
-        targetVel = 780;
-        rollerVel = 1800;
-        backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
-        outtake1.setVelocity(targetVel);
-        outtake2.setVelocity(targetVel);
-        backSpinRoller.setVelocity(rollerVel);
+
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
         try {
@@ -403,6 +402,7 @@ public class BlueAuto2 extends OpMode {
             throw new RuntimeException(e);
         }
         fanRotate.setPosition(upPos1);
+        backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         outtake1.setVelocityPIDFCoefficients(20,0,0,20);
         outtake2.setVelocityPIDFCoefficients(20,0,0,20);
     }
