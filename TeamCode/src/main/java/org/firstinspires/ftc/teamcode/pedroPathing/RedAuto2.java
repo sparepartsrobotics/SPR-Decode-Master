@@ -36,19 +36,19 @@ public class RedAuto2 extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(107, 131, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose detectPose = new Pose(77, 70, Math.toRadians(-90));
-    private final Pose launchPose = new Pose(85, 93, Math.toRadians(220));
+    private final Pose launchPose = new Pose(85, 93, Math.toRadians(219));
     private final Pose launchOrder = new Pose(80,36, Math.toRadians(0));
     private final Pose order3 = new Pose(92, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order3s = new Pose(103,56.5,Math.toRadians(0));
-    private final Pose order31 = new Pose(106, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order31 = new Pose(107.5, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order32 = new Pose(112, 56.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order2 = new Pose(89, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order2s = new Pose(103,80.5,Math.toRadians(0));
-    private final Pose order21 = new Pose(106, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose order22 = new Pose(112, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order21 = new Pose(107.5, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order22 = new Pose(115, 80.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose park = new Pose(89, 32.5, Math.toRadians(0));
     private final Pose order1s = new Pose(103,32.5,Math.toRadians(0));
-    private final Pose order11 = new Pose(106, 32.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose order11 = new Pose(107.5, 32.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose order12 = new Pose(111, 32.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     // Middle (Second Set) of Artifacts from the Spike Mark.
     private Path detect;
@@ -216,7 +216,7 @@ public class RedAuto2 extends OpMode {
             case 6:
                 if (x) {
                     follower.followPath(moveToOrder32);
-                    sleep(250);
+                    sleep(500);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -283,6 +283,7 @@ public class RedAuto2 extends OpMode {
             case 11:
                 if (x) {
                     follower.followPath(moveToOrder22);
+                    sleep(500);
                     x = false;
                 }
                 if (!follower.isBusy()) {
@@ -363,8 +364,8 @@ public class RedAuto2 extends OpMode {
     }
     @Override
     public void loop() {
-        targetVel = 775;
-        rollerVel= 2000;
+        targetVel = 760;
+        rollerVel= 1960;
         backSpinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         outtake1.setVelocity(targetVel);
         outtake2.setVelocity(targetVel);
@@ -463,7 +464,7 @@ public class RedAuto2 extends OpMode {
         intake.setPower(1);
     }
     public void stopIntake(){
-        intake.setPower(1);
+        intake.setPower(0);
     }
 
     /** We do not use this because everything should automatically disable **/

@@ -74,7 +74,7 @@ public class sprTeleopRedCorner extends OpMode {
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         pathChain1 = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(85, 19))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(248), 0.8))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(245), 0.8))
                 .build();
         pathChain2 = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(85, 93))))
@@ -217,7 +217,7 @@ public class sprTeleopRedCorner extends OpMode {
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 900;
+                targetVel = 930;
                 rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
@@ -238,7 +238,7 @@ public class sprTeleopRedCorner extends OpMode {
                 outtake2.setVelocity(targetVel);
             }
             if(gamepad1.bWasPressed()){
-                targetVel = 900;
+                targetVel = 930;
                 rollerVel = 1860;
                 backspinRoller.setDirection(DcMotorSimple.Direction.REVERSE);
                 outtake1.setVelocity(targetVel);
